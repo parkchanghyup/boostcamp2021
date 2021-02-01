@@ -66,37 +66,6 @@ def angle(x,y):
     return theta
 
 
-```
-
-
-    ---------------------------------------------------------------------------
-
-    TypeError                                 Traceback (most recent call last)
-
-    <ipython-input-7-fb00b7ff7266> in <module>
-          5     return theta
-          6 
-    ----> 7 angle((0,1),(0,2))
-    
-
-    <ipython-input-7-fb00b7ff7266> in angle(x, y)
-          1 import numpy as np
-          2 def angle(x,y):
-    ----> 3     v = np.inner(x,y) / (l2_norm(x) * l2_norm(y))
-          4     theta = np.arccos(v)
-          5     return theta
-    
-
-    <ipython-input-4-8473d23205b3> in l2_norm(x)
-          5 
-          6 def l2_norm(x):
-    ----> 7     x_norm = x*x
-          8     n_norm = np.sum(x_norm)
-          9     x_norm = no.sqrt(x_norm)
-    
-
-    TypeError: can't multiply sequence by non-int of type 'tuple'
-
 
 ## 행렬
 
