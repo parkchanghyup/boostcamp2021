@@ -31,43 +31,11 @@ print(one_hot_encoding(softmax(vec)))
 ```
 
 
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    <ipython-input-8-d52b225d2b21> in <module>
-          7 
-          8 vec = np.array([[1,2,0],[-1,0,1,[-10,0,10]]])
-    ----> 9 print(one_hot_encoding(vec))
-         10 print(one_hot_encoding(softmax(vec)))
-    
-
-    NameError: name 'one_hot_encoding' is not defined
-
-
 
 ```python
 softmax(vec)
 ```
 
-
-    ---------------------------------------------------------------------------
-
-    ValueError                                Traceback (most recent call last)
-
-    <ipython-input-9-bb37516d7bfb> in <module>
-    ----> 1 softmax(vec)
-    
-
-    <ipython-input-8-d52b225d2b21> in softmax(vec)
-          1 import numpy as np
-          2 def softmax(vec):
-    ----> 3     denumerator = np.exp(vec - np.max(vec,axis = -1 ),keepdims=True)
-          4     numerator = np.sum(denumerator, axis = -1, keepdins= True)
-          5     val = denumerator / numerator
-    
-
-    ValueError: operands could not be broadcast together with shapes (2,) (3,) 
 
 
 ## 활성함수
@@ -78,7 +46,7 @@ softmax(vec)
 
 ![active.PNG](image/active.PNG)
 
-- 신경망은 ```선형모델과 활성함수를 합성한 함수``입니다.
+- 신경망은 ```선형모델과 활성함수를 합성한 함수```입니다.
 - 다층(multi-layer) 퍼셉트론(MLP)는 ```신경망이 여러층 합성된 함수```입니다.
 
 ![multi.PNG](image/multi.PNG)
