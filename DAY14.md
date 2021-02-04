@@ -117,37 +117,141 @@ BPTT를 통해 RNN의 가중치행렬을 미분을 계산해보면 아래와 깉
 
 - cell state 가 없고 hidden state 만 존재 - > output gate가 필요 없음 
 
-
-```python
-
-```
+<br/>  <br/>  <br/>  
 
 
-```python
+## Transformer
+---
 
-```
+### Sequence model의 문제점
+<br/>    
 
+중간에 어떤 데이터가 빠지거나, 순서가 바뀌면 학습이 어려움 .
 
-```python
+<br/>    
 
-```
-
-
-```python
-
-```
+![Transformer1.PNG](image/Transformer1.PNG)
 
 
-```python
 
-```
+<br/>  
+
+Transformer 는 sequence를 다루는 모델인지 attetion 구조를 활용한 모델이라고 생각하면 된다.
+
+![Transformer2.PNG](image/Transformer2.PNG)
+
+<br/>    
+
+- 어떤 sequence 데이터를 다른 sequence 데이터로 바꿔 주는 것.  
+    - ex ) 영어 입력 -> 한글 출력
+
+<br/>    
+
+![Transformer4.PNG](image/Transformer4.PNG)
+
+<br/>    
+
+- 아래의 사진을 살펴보면 알 수 있듯이 Transformer는 입력 시퀀스와 출력 시퀀스의 갯수가 다를 수 있음
+- 그리고 도메인도 다를 수 있다. 
+    - 불어, 영어
+- RNN의 경우 입력으로 세개의 단어가 주어지면 모델을 3번 돌려야 되는데 Transformer는  RNN과 달리 한번만 돌아간다.
+- 
+
+![Transformer5.PNG](image/Transformer5.PNG)
 
 
-```python
 
-```
+- n개의 단어가 어떻게 인코더에서 한번에 처리 ?
+- 인코더와 디코더 사이에 어떤 정보를 주고 받는지 ?
+- 디코더가 어떻게 generation 할수 있는지 ?
+
+<br/>    
+
+![Transformer6.PNG](image/Transformer6.PNG)
+
+<br/>    
+
+- 인코더에 n개의 단어가 들어가고, 한개의 인코더에는 Self-Attention과 FFNN으로 나눠 져있다. 
+- 그리고 모든 인코더가 그림과 같이 쌓임.
 
 
-```python
+###  ```self-attention``` : transfomer 구조에서 가장 중요함.
+---
 
-```
+<br/>  
+
+먼저 아래와 같이 3개의 단어가 있으면 ```self-attention``` 에서는 세개의 단어에 대해 벡터를 찾아준다.
+
+
+<br/>  
+
+![Transformer7.PNG](image/Transformer7.PNG)
+
+<br/>  
+그리고 나머지 단어의 벡터도 함께 고려해서 $x_i$ 를 $z_i$로 바꿔준다.
+
+<br/>  
+
+![Transformer8.PNG](image/Transformer8.PNG)
+
+<br/>
+
+```self-attetion```은 한개의 단어에서 각각의 NN을 통해 Querise, Keys, Values 벡터를 만들어 낸다.
+
+
+<br/>  
+
+![Transformer9.PNG](image/Transformer9.PNG)
+
+<br/>  
+
+그리고 score 값을 구해주는데 score 값은 내가 인코딩 하고자 하는 단어의 쿼리 벡터와,   
+자기 자신을 포함한 n개의 단어에 대한 key 벡터를 내적 한후 합한 값으로 구한다.
+
+
+<br/>  
+
+
+
+![Transformer11.PNG](image/Transformer11.PNG)
+
+<br/>  
+
+그리고나서 정규화된 score 벡터를 softmax 함수에 넣어준다.  
+최종적으로 사용할 값은 각각의 단어에서 나오는 value  * score 를 사용.  
+
+위 작업을 거치면 하나의 단어에 대한 인코딩 벡터를 구할 수 있다.
+
+<br/>  
+
+
+
+### Positional Encoding
+---
+```self-attention```을 거쳐 나온 벡터에는 순서에 대한 정보가 사실 포함이 되어 있지않음 .
+문장에서 앞뒤 단어 순서는 중요하기 때문에 그것에 대한 작업을 해주는 것이 ```Positional Encoding```이다.
+
+<br/>  
+
+![Positional.PNG](image/Positional.PNG)
+
+<br/>  
+
+### Decoders
+---
+**참고 블로그 (http://jalammar.github.io/illustrated-transformer/)**
+
+
+
+- ```transformer는``` ```Decoders```로 key와 value를 보냄
+
+- ```Decoders```에 들어가는 단어들로 만들어지는 쿼리벡터와 ```Encoder```에서 가져온 key ,value 벡터를 바탕으로 최종 값을 출력
+
+![디코더.PNG](image/디코더.PNG)
+
+## Vision Transformer
+---
+이미지 분류를 할때 활용 .
+이미지를 특정 영역으로 나눔 ->  인코더만 활용.
+
+![Vision_transformer.PNG](image/Vision_transformer.PNG)
