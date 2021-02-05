@@ -188,6 +188,7 @@ Transformer 는 sequence를 다루는 모델인지 attetion 구조를 활용한 
 ![Transformer7.PNG](image/Transformer7.PNG)
 
 <br/>  
+
 그리고 나머지 단어의 벡터도 함께 고려해서 $x_i$ 를 $z_i$로 바꿔준다.
 
 <br/>  
