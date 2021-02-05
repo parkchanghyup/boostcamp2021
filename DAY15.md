@@ -8,11 +8,12 @@
 ```generative model 이란```
 
 이름에서 알 수 있듯이 무언가를 만들어 내는 모델이지만 단순히 그것이 전부는 아니다.  
-<br/>  
+
 강아지 사진 데이터로 예를 들어 보면,
- generative model을 통해 품종별로 강아지를 분류하는 모델을 만들수도 있고, **강아지 사진 자체**를 더 만들어 낼수 있다.
-<br/>  
-그리고 어떤 이미지가 강아지인지 아닌지 확률을 통해 구분해 내줄수도 있다. ```(explicit model)```
+ ```generative model```을 통해 품종별로 강아지를 분류하는 모델을 만들수도 있고, **강아지 사진 자체**를 더 만들어 낼수 있다.  
+
+
+그리고 어떤 이미지가 강아지인지 아닌지 확률을 통해 구분해 줄수도 있다. ->       ```(explicit model)```
 
 ---
 #### 이부분은 중요한 내용은 아님
@@ -31,7 +32,7 @@
 기계학습에서 파라미터의 숫자가 많아 질 수록 학습은 더욱 어렵다.   
 ->  ```성능을 높이려면 파라미터를 줄여야됨 ```
 <br/>  
-### Markov assumption (각각의 표본(?)이 독립이라고 가정)
+### Markov assumption (각각의 n개의 픽셀이  독립이라고 가정)
 ---
 위 이진 분류 문제에서 각각의 표본이 독립이라고 가정하면 표현할 수 있는 경우의 수는 $2^n$ 으로 똑같지만, **파라미터의 갯수는 n개로 줄어든다**
 
@@ -46,8 +47,9 @@
 - Bayes' rule:
 - Conditional independece 
     - if $ x \perp y|z$,   $then$   $p(x|y,z)$   =   $p(x|z)$
+---
 
-chain rule 을 쓰면 몇개의 파라미터 필요 할까?
+#### chain rule 을 쓰면 몇개의 파라미터 필요 할까?
 $p(x_1,...,x_n) = p(x_1)p(x_2|x_1)...p(x_n|x_1,...,x_{n-1})$
 
 - $p(x_1)$ = 파라미터 1개
@@ -70,7 +72,7 @@ $p(x_1,...,x_n) = p(x_1)p(x_2|x_1)...p(x_n|x_1,...,x_{n-1})$
 ---
 ![Auto_regressive.PNG](image/Auto_regressive.PNG)
 
-- 우리의 목표는 28 x 28 픽셀을 학습시키는 거다
+- 우리의 목표는 28 x 28 픽셀을 학습시키는  것
 - 얘를 어떻게 $p(x)$ 로 표현 할 수 있을까 ?
     - chain rule을 가지고 join distribution으로 나누고
     - $p(x_{1:784} = p(x_1)p(x_2|x_1)p(x_3|x_1:2)...$
@@ -78,14 +80,14 @@ $p(x_1,...,x_n) = p(x_1)p(x_2|x_1)...p(x_n|x_1,...,x_{n-1})$
     - autoregressive model 이용하려면 순서를 매겨야 한다. 순서를 매기는 방식에 따라 전체 모델의 구조나 성능이 달라 진다.
   
 
-### NADE : Neural Aitoregressive Denstiy Estimator
+### NADE : Neural Autoregressive Denstiy Estimator
 --- 
 
 ![NADE.PNG](image/NADE.PNG)  
 
-- i 번째 픽셀은 1번쨰 픽셀부터 i-1번째 픽셀까지 dependent 한다.
-- 예를 들어 다섯번째 픽셀의 확률 값은 1~4번째의 값을   neural network를 통해 값을 구하고, sigmoid 함수를 통과시켜 0~1 사이의 확률값으로 바꿔준다 .
-- i 번째 픽셀은 i-1개의 픽셀에 dependent -> 5번째 픽셀을  만들때는 4개의입력 에 대한 weight가 필요하다.
+- i 번째 픽셀은 1번째 픽셀부터 i-1번째 픽셀까지 dependent 한다.
+- 예를 들어 다섯번째 픽셀의 확률 값은 1~4번째의 값을 neural network를 통해 값을 구하고, sigmoid 함수를 통과시켜 0~1 사이의 확률값으로 바꿔준다 .
+- i 번째 픽셀은 i-1개의 픽셀에 dependent -> 5번째 픽셀을 만들때는 4개의입력 에 대한 weight가 필요하다.
 
 - NADE는 ```explict model``` 이다.
   - n개의 픽셀이 주어지면 모덜이 첫번째 픽셀에 대한 확률 분포를 알고있고,
@@ -97,13 +99,14 @@ $p(x_1,...,x_n) = p(x_1)p(x_2|x_1)...p(x_n|x_1,...,x_{n-1})$
 i 번재 픽셀은 i-1개의 픽셀에 의존 ? - > 3번째 픽셀ㅇ된 nn만들때는 2개의 입력을 받는 weight가 필요 100번째는 99개의 입력을 받을 수 있는 nn가 필요.
 
 - NADE는 explict model 임 
-    - n개으 ㅣ픽셀이 주어지면 
+    - n개의 픽셀이 주어지면 
     - 우리의 모델이 첫번째 픽셀에 대한 확률 분포를 알 고 있고 
    첫번째를 알면 두번째를 알수있다.
     - 그래서 이값들을 다곱하면 작지만 확률 값을 하나도출 할 수 있음.
-- 연속형 확률 분포일때는 gaussian mixture 모델을 활용하면됨 -> 어떻게 ?
 
-### Pixel RnN
+- 연속형 확률 분포일때는 ```gaussian mixture``` 모델을 활용하면됨 
+
+### Pixel Rnn
 --- 
 - n x n image 가 있을때 R G B 를 순서대로 만듦
   <br/>  
@@ -112,7 +115,7 @@ i 번재 픽셀은 i-1개의 픽셀에 의존 ? - > 3번째 픽셀ㅇ된 nn만�
 ```NADE``` 는 fully connected model을 이용 한 것이고, 
  pixel rnn은 rnn을 통해서 generate 한 다는 것이 큰 차이 이다.
 
-- Pixel Rnn 모델은 데이터의 order를 어떻게 하냐에 따라 Row LSTM,Diagonal BiLSTM 으로 나뉜다.
+- Pixel Rnn 모델은 데이터의 ordering을 어떻게 하냐에 따라 Row LSTM,Diagonal BiLSTM 으로 나뉜다.
 
 ![Pixel_RNN2.PNG](image/Pixel_RNN2.PNG)
 <br/>
@@ -123,7 +126,9 @@ Row LSTM은 i번째 픽셀을 만들때 그 위쪽에 있는 정보를 활용 �
 
 ## Latent Variable Models
 ---
-```Variational inference 이란..``` 
+```Variational inference 란..``` 
+
+
 
 : 내가 찾고자하는 poseterior distribution 를 근사할 수 있는 variational distribution 를 찾는 과정 
 
@@ -158,18 +163,17 @@ ELBO를 나눠보면 ```Reconstruction Term```과 ```Prior Fitting Term```으로
 ### Variational Auto-encoder limitation
 ---
 - VA는 intractalbe model 이다 
-- ELBO가 두개로나눠졌는데 KL ???
+  - 어떤 입력이 주어졌을때 이게 얼마나 적절한지 알기 어렵다.
 - 일반적으로 isotropic Gaussian을 활용함
-
 - 가장 큰 단점은 인코더를 활용할때 Gaussian이 아니면 활용하기 어렵다.
+
 - 가우시안 말고 다른거 쓰고싶은때 사용하는게 ```Adversarial Auto-encoder```이다.
 
 ### Adevesarial Auto-encoder 
 ---
 ![Adevesarial.PNG](image/Adevesarial.PNG)
 - prior fitting term ? 을 gan objective로 바꾼거 일뿐임 ?
-- 사실은 ? 뭐라는건지..,.???
-
+- 샘플링만 가능한 분포만 있어도 사용 할 수 있다.
 
 
 
@@ -178,7 +182,7 @@ ELBO를 나눠보면 ```Reconstruction Term```과 ```Prior Fitting Term```으로
 ![GAN.PNG](image/GAN.PNG)
 아이디어는 도둑이 위조지폐를 만들고 싶은데 위조지폐를 잘 분별하는 경찰이있음 경찰은 위조지폐를 계속 분별하고 도둑은 분별된 지폐를 바탕으로 더 잘 만들려고 함 
 
-내가 학습하는 dicriminator? 가 점차점차 좋아짐
+내가 학습하는 discriminator 가 점차점차 좋아짐
 -> 그래서 제너레이터도 좋아짐 
 
 
