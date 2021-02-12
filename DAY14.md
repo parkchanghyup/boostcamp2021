@@ -20,9 +20,10 @@
 > 위 조건부 확률은 과거의 모든 정보를 사용하지만 시퀀스 데이터를 분석할 때 모든 과거 정보들이 필요한 것은 아니다.
 
 - 시퀀스 데이터를 다루기 위해선 길이가 가변적인 데이터를 다룰 수 있는 모델이 필요하다.
+
 ![Sequence.PNG](image/Sequence.PNG)
 - 조건부에 들어가는 데이터 길이는 가변적이다.
-- 고정된 길이 $\tau$만큼의 시퀀스만 사용하는 경우 ```AR($\tau$)(Autoregressive Model)``` 자기 회뒤모델이라고 부른다.
+- 고정된 길이 $\tau$만큼의 시퀀스만 사용하는 경우 `AR($\tau$)(Autoregressive Model)` 자기 회뒤모델이라고 부른다.
 - 또 다른 방법은 바로 이전 정보를 제외한 나머지 정보들을 $H_t$라는 잠재변수로 인코딩해서 활용하는 잠재 AR 모델이다. 
 - 잠재변수 $H_t$를 신경망을 통해 반복해서 사용하여 시퀀스 데이터의 패턴을 학습하는 모델이 RNN 이다.
 
@@ -31,7 +32,7 @@
 - 가장 기본적인 RNN 모형은 MLP와 유사한 모양이다.
 - $w^{(1)},w^{(2)}$은 시퀀스와 상관없이 불변인 행렬이다.
 - 이 모델의 과거의 정보는 다룰 수 없다.
-![RNN.PNG](image/RNN.PNG)
+
 
 - RNN은 이전  순서의 잠재 변수와 현재의 입력을 활용하여 모델링한다.
 - 잠재변수 $H_t$를 복제해서 다음 순서의 잠재변수를 인코딩하는데 사용한다.
@@ -39,7 +40,7 @@
 ![RNN2.PNG](image/RNN2.PNG)
 
 ### BPTT
---- \
+--- 
 BPTT를 통해 RNN의 가중치행렬을 미분을 계산해보면 아래와 깉이 미분의 곱으로 이루어진 항이 계산된다.
 ![BPTT.PNG](image/BPTT.PNG)
 
@@ -60,7 +61,6 @@ BPTT를 통해 RNN의 가중치행렬을 미분을 계산해보면 아래와 깉
 ---
 
 #### Naive sequence model
-<br/>  
 
 ![SequentailModel.PNG](image/SequentailModel.PNG)  
 
@@ -76,6 +76,7 @@ BPTT를 통해 RNN의 가중치행렬을 미분을 계산해보면 아래와 깉
 #### Markov model (first-order autoregressive model)
 <br/> 
 - 나의 현재는 바로 이전의 과거에만 의존한다는 가정 -> 허무맹랑한 소리 ..수능 점수는 수능 전날 공부한 것을 기준으로 나오지 않음 
+
 ![SequentailModel3.PNG](image/SequentailModel3.PNG)
 
 
@@ -136,7 +137,7 @@ BPTT를 통해 RNN의 가중치행렬을 미분을 계산해보면 아래와 깉
 
 <br/>  
 
-Transformer 는 sequence를 다루는 모델인지 attetion 구조를 활용한 모델이라고 생각하면 된다.
+Transformer 는 sequence를 다루는 모델인데 attetion 구조를 활용한 모델이라고 생각하면 된다.
 
 ![Transformer2.PNG](image/Transformer2.PNG)
 
@@ -175,7 +176,7 @@ Transformer 는 sequence를 다루는 모델인지 attetion 구조를 활용한 
 - 그리고 모든 인코더가 그림과 같이 쌓임.
 
 
-###  ```self-attention``` : transfomer 구조에서 가장 중요함.
+### `self-attention` : transfomer 구조에서 가장 중요함.
 ---
 
 <br/>  
@@ -207,7 +208,7 @@ Transformer 는 sequence를 다루는 모델인지 attetion 구조를 활용한 
 <br/>  
 
 그리고 score 값을 구해주는데 score 값은 내가 인코딩 하고자 하는 단어의 쿼리 벡터와,   
-자기 자신을 포함한 n개의 단어에 대한 key 벡터를 내적 한후 합한 값으로 구한다.
+자기 자신을 포함한 모든 단어에 대한 key 벡터를 내적 한후 합한 값이다.
 
 
 <br/>  
