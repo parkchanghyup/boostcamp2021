@@ -54,10 +54,10 @@
 - Stochastic gradient descent
     - 10만개의 데이터가 있으면 한번에 한개를 구해서 업데이트하고..반복..
 
-- Mini-batchgradientdescent
+- Mini-batch gradient descent
     - 10만개 데이터를  다 사용하지는 않지만 한개를 사용하지도 않는.. 예를 들어 240개를 뜯어서 거기에 대해 gradient를 구해서 업데이트하고 ... 반복...
 
-- Batchgradientdescent
+- Batch gradient descent
     - 10만개의 gradient 를 한번에 구하고 모델에 업데이트하고 ... 반복 -> GPU 터짐...
 
 
@@ -88,7 +88,7 @@ flat Minimun은 train fuction에서 조금멀어져도 test fuction 에서도 �
 
 장점 : 한번흘러간 gradient 방향을 유지시켜 줌 그래서 gradient가 많이 왔다갔다해도 어느정도 잘 학습이됨.
 
-ㅡ
+
 ### Nesterov Accelerated Gradient
 ---
 ![NesterovAcceleratedGradient.PNG](image/NesterovAcceleratedGradient.PNG)
@@ -155,7 +155,7 @@ RMSprop 에서 Momentum을 같이 사용함.
 
 ### Noise Robustness
 ---
-입력데이터와 weighths에  노이즈를 집어 넣느것 
+입력데이터와 weight에  노이즈를 집어 넣느것 
 - 왜 그런지 모르지만 넣으니까 잘되네 ?  
 ![NoiseRobustness.PNG](image/NoiseRobustness.PNG)
 
@@ -177,8 +177,8 @@ weight 몇개를 0으로 잡는거
 
 ### Batch Normalization 
 ---
-내가 적용하고려는 레이어의 스태티스틱을 정규화
-뉴럴 네트워크 각각의 레이어가 천개의 파라미터를 정규화 시키는거 
+내가 적용하려는 레이어를 정규화
+신경망 각각의 레이어가 천개의 파라미터를 정규화 시키는거 
 한가지 확실한건 Batch Normalization 을 활용하면 성능이 올라간다 .. 
 
 
@@ -222,7 +222,7 @@ http://setosa.io/ev/image-kernels/
 
 <br/>
 - 2D-Conv 연산은 이와 달리 커널을 입력벡터 상에서 움직여가면서 선형 모델과 합성함수가 적용되는 구조이다.
-- 입력크기를(H,W), 커널 크기를($K_H,K_W)$, 출력크기를 ($O_H,O_W$)라 하면 출력 크기는 다음과 같이 계산한다.
+- 입력크기를(H,W), 커널 크기를$(K_H,K_W)$, 출력크기를 ($O_H,O_W$)라 하면 출력 크기는 다음과 같이 계산한다.
 <br/>  
 
 ![2차원Convloution2.PNG](image/2차원Convloution2.PNG)

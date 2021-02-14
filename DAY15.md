@@ -206,7 +206,7 @@ ELBO를 나눠보면 ```Reconstruction Term```과 ```Prior Fitting Term```으로
 
 그러면 이 optimal discriminator를 다시 제너레이터에 집어 넣으면 결국 JSD가 나옴 
 
-엄밀히 말하면 이 discri 가 optimal이라 가정했을떄이걸 gene로 학습하고 jsd라는 식이나왔다 그래서 실제로 봤을떄 disc 가 optimal 에수렴하낟고 보장한다고 어렵고 genen가 이런식으로 안나올수도 있지 
+엄밀히 말하면 이 discriminator 가 optimal이라 가정했을떄이걸 generaotr과 학습하고 jsd라는 식이나왔다 그래서 실제로 봤을떄 discriminator 가 optimal 에수렴한다고 보장하기 어렵고 generaotr가 이런식으로 안나올수도 있지 
 이론적으로는 가능하지만 현실적으로는 좀 어렵긴함 ..
 
 어쨌든 이런 아이디어 알아주면 좋다. 
@@ -222,8 +222,8 @@ ELBO를 나눠보면 ```Reconstruction Term```과 ```Prior Fitting Term```으로
 여기는 REAKY RELU 를 쓰자 하이퍼파라미터들이 이미지 만들떄 좋더라 뭐 그런
 
 ### INFO-gan
---
-![infogan.PNG]
+---
+![infogan.PNG](image/infogan.PNG)
 학습을 할떄 단순히 G라는 걸 통해 이미지만 만든는 것이아니라 C라는 클래스도 만듬
 결과론적으로 제너레이션을 할때 GAN이 특정 모드에 집중할 수 있게 만들어줌
 마치 멀티 모델 DITRIBUTION 을 학습하는 것을 C라는 벡터로 잡아줌 ?
