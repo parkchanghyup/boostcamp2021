@@ -51,11 +51,20 @@
 ## Greedy decoding
 ---
 - 시퀀스로서의 전체적인 문장의확률값을 포는게아니라 현재 타입스탭에서 가장 좋아보이는 단어를 선택하는 것
-- 
+- greedy decoding 방법은 이전에 생성한 결과를 바꿀 수 없다.
+- 입력 문장을 x 출력 문장을 y 라고 하고 출력 문장의 첫번째 단어를 $y_1$이라고 생각하면 아래와 같이 확률을 구할 수 있음
+- $
+P(y|x)=P(y_1|x)P(y_2|y_1,x)P(y_3|y_2,y_1,x)...P(y_{T}|y_1,...,y_{T-1},x)=\prod_1^TP(y_t|y_1,..y_{t-1},x)$
+- 위의 식을 보면 첫번째 단어를 높은 확률인 단어로 선택했지만, 뒤로 진행됨에 따라 전 체적인 확률이 높지 않을 수 있다. 현 재 단어에 대한 확률값이 조금 낮지만 전체적인 확률값이 높아지도록 선택하는 것이 좋은 결과를 얻을 수 있다. 하지만 모든 경우의 수를 구하기 위해서는 경우의 수가 너무 많아 불가능함.
+- 하나의  tiem step만 사용하는 greedy decoding 방법과 모든 time sstep의 경우를 다 따져보는 두가지 방법을 적절하게 사용하는 것이 `beam search`이다.
 
 ## Exhaustive search
 ---
-- 전체 문장의 확률값을 보는거 -> 너무 복잡하고 오래걸림
+
+
+## Beam search
+---
+- 전체 문장의 확률값을 보는거 -> 너무 복잡하고 오래걸림 그래서 등장한게 
 
 
 그래서 나온게 `Beam search`
@@ -93,17 +102,30 @@ score(y_1,...,y_t)=logP_{LM}(y_1,...,t_t|x)=\sum_{i = 1}^t logP_{LM}(y_i|y_1,...
 $score(y_1,...,y_t)=\frac{1}{t}\sum_{i=1}^tlogP_{LM}(y_i|y_1,...,y_{i-1},x)$
    
 
+# 문장 번역 평가 방법
+---
+실제 결과와 예측결과를 단순 위치 기반으로 구분하게되면 정확한 정확도를 계산할 수 없다.
+예를 들어 I love you와 oh i love you의 경우 위치 기반으로 구분하면 0%의 결과가 나온다.
+- `precision 방법(정밀도)`
+    - 예측 문장에서 위치를 고려하지 않고 정답 문장과 일치하는 단어의 수를 예측 문장의 단ㅇ어의 수로 나누어 주는것으로 계산
+    - $
+precision = \frac{correct word}{length\_of\_prediction}$
+
+- `recall 방법(재현율)`
+    - 분자는 precision방법과 똑같지만 분모로 예측결과의 길이가 아닌 정답의 길이를 사용
+    - $
+recall=\frac{correctword}{length\_of\_reference}$
+- `F measure`
+    - precision, recall의 조화 평균 사용
+    - $
+F-measure = \frac{precision *recall}{\frac{1}{2}(precision+recall)}$
+
+이러한 방법들은 단어의 위치를 전혀 고려하지 않기 때문에 문법적으로 맞지 않지만 특정 단어들이 포함되어만 있으면 높은 정확도로 계산된다.
 ## BLEU score
 ---
+- N-gram overlap (n개의 연속된 단어)를 사용
+- 4개의(1~4 N-gram) precision의 기하평균을 사용
 
-- 
+>    $BLEU=min(1,\frac{length\_of\_prediction}{length\_of\_reference})(\prod_{i=1}^4precision_i)^{\frac{1}{4}}$
 
-
-```python
-
-```
-
-
-```python
-
-```
+![BLEU.PNG](BLEU.PNG)
