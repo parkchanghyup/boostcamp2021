@@ -82,3 +82,67 @@
 - Document를 해석하고 Question에 대답해주는 Task이다.
 - 이러한 Task를 위한 Dataset으로 SQuAD가 있다.
 - BERT를 사용해서...
+
+# GPT-2
+- Motivation
+    - Multitask learning as Question Answering
+        - 해당 논문에서는 다양한 자연어 처리Task가 질의응답으로 바꾸어 통합된 자연어 생성으로 다양한 Task를 처리할 수 있다고 말하였다.
+        - 예를들어 문장이 긍정, 부정인지 분류하고자하면 "해당 문장이 긍정이냐 부정이냐" 라는 answer을 한것이다.
+        - 요약 Task의 경우 "주어진 문장의 요약이 무엇이냐" 라는 answer을 한것이다.
+- Dataset
+    - 높은 수준의 글을 선별적으로 사용(Reddit..)
+- Preprocess
+    - Byte pair encoding
+- Modification
+    - Layer가 위로 올라감에 따라 index에 따라 init값을 더 작게 하였다.
+
+        → Layer가 위로 갈 수록 선형변환의 값이 0에 가까워지도록
+
+        →위쪽의 Layer가 하는일이 더 줄어들도록
+
+- 번역, 요약등을 zero shot setting으로 잘 동작할 수 있다는 가능성을 보여주었음
+
+    → 번역, 요약을 위한 학습 데이터를 학습한것이 아닌 Language modeling을 통해 학습한 모델을 가지고 ............?
+
+---
+
+# GPT-3
+
+- GPT-2에 비해서 구조적 변화가 아닌 더 많은 Layer, 더 많은 학습데이터를 사용
+- GPT-2로 보여주었던 Zero shot setting에서의 가능성을 놀라운 수준으로 올렸다.
+
+![gpt3.PNG](gpt3.PNG)
+- 별도의 fine tuning 없이 번역 등의 Task가 잘 수행된다.
+- 모델이 커질수록 더 좋은 성능이 나온다는 통계를 보여주었음
+
+---
+
+# ALBERT
+
+- 기존 BERT가 가지던 성능의 하락없이 모델 size와 학습 시간이 빨라지는것을 목표로 모델제시
+
+![albert.PNG](albert.PNG)
+
+- Cross-Layer Parameter sharing
+- Sentence order Prediction
+
+---
+
+# ELECTRA
+
+- Language model을 통해 단어를 복원해주는 generator라는 모델을 두고, 주어진 Masked Language를 generator를 통해 Masked된 단어를 예측하고 Discriminator(ELECTRA)모델을 사용해 각각의 단어가 원래의 단어인지 replace된것인지  확인하는것으로 학습한다.
+- 학습된 Discriminator를 pre-training model로 사용한다.
+
+---
+
+# Light-weight models
+
+### DistillBERT
+
+- Transformer의 구현체를
+
+### TinyBERT
+
+---
+
+# Fusing Knowledge Graph
