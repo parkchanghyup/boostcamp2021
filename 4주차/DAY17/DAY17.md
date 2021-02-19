@@ -108,3 +108,8 @@ cell state vector가 업데이트 되는 과정이 곱하는 게아니라 forget
 - rnn은 다양한 길이를 가질 수 있는 시퀀스데이터에 특화된 유연한 형태의 딥러닝 모델 구조
 - vanila rnns 은 구조가 간단하지만 거의 잘 안씀
 - 보다 진보된 형태인 LSTM/GRU를 실제로 많이 사용하고 `cell state vector` 와 `hidden state vector` 업데이트하는 방식이 덧셈이므로 기울기 소실을 해결.
+
+
+## 실습
+`Basic_RNN` : https://colab.research.google.com/drive/1Qpwd4hIcWozpaidrKvmvnc3Vu2XhK1gH?usp=sharing
+`Fency_RNN` : https://colab.research.google.com/drive/16i2DdmfKrpq7yYTEREAgpj87qQzp4rHM?usp=sharing

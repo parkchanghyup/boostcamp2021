@@ -115,3 +115,9 @@ F-measure = \frac{precision *recall}{\frac{1}{2}(precision+recall)}$
 >    $BLEU=min(1,\frac{length\_of\_prediction}{length\_of\_reference})(\prod_{i=1}^4precision_i)^{\frac{1}{4}}$
 
 ![BLEU.PNG](BLEU.PNG)
+
+
+## 실습
+---
+`Seq_2_seq` : https://colab.research.google.com/drive/1GJh7E1_pu4P6DEifAy0YRBYhdgwU5rw1?usp=sharing
+1seq_2_seq + attention : https://colab.research.google.com/drive/1n78Ej9PWj0E8iDGGzPSCNEOIMitXyvi3?usp=sharing

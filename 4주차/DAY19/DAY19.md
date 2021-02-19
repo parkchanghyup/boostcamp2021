@@ -19,18 +19,18 @@
 - 양방향의 hidden state를 모두 고려하는 방법
 - 병렬적으로 두 개의 모듈을 만들고 hidden state를 concat하여 사용.
 
-## Transformer (14일차 내용 참고)
----
+# Transformer (14일차 내용 참고)
+
 https://github.com/parkchanghyup/boostcamp2021/blob/master/1~3%EC%A3%BC%EC%B0%A8/DAY14.md
 
 
 
----
-## 추가적인 부분
+
+## 오늘 수업 추가내용 
 ---
 
 ## Scaled Dot-Product Attention
----
+
 ![transformer1.PNG](transformer1.PNG)
 - $A(Q, K, V) = softmax(QK^T)V=softmax(\frac{QK^T}{\sqrt{d_k}})V$
 - Q,K의 차원에 따라 내적값의 분산이 크게 영향을 받게 됨
@@ -41,18 +41,20 @@ https://github.com/parkchanghyup/boostcamp2021/blob/master/1~3%EC%A3%BC%EC%B0%A8
 ## Multi-Head Attention
 ---
 - 여러개의 Atttention 모듈을 사용하는것을 말함.
-![MHA.PNG](MHA1.PNG)
+![MHA.PNG](MHA.PNG)
 ![MHA2.PNG](MHA2.PNG)
 ![MHA3.PNG](MHA3.PNG)
 
-- 계산 복잡도를 위해 주요 연산에 대해 살펴보자
+계산 복잡도를 위해 주요 연산에 대해 살펴보자
+<br/>  
 `self-attention` : 주요 연산은 k,q의 내적으로 각각 n개만큼 있으며 d개의 entry에 대한 내적을 수행 해야하므로 이에 소모되는 시간 복잡도는 레이어당 $O(dn^2)$이다.
-`RNN`의 경우 hidden state vector가 매 time-step마다 $W_hh$는 d x d 행렬이므로 계산량이 $O(d^2n)$ 이 된다.
-- 이렇게 되면 공간적 측면에서도 연산량에 비례하는 공간복잡도를가지게되는데, backpropagation을 수행하려면 연산된 모든 값들을 저장하고 있어야 하기 때문.
-- self- attention의 경우 sequence 길이가 늘어남에 따라 저장해야하는 정보량이 $n^2$으로 늘어나게 되므로 문장의 길이가 길면 길수록 메모리가 많이 필요함 결론적으로 attetntion이 RNN보다 메모리를 많이 먹게됨
-- 다만 RNN은 timestep마다 이전의 hidden state vector를 활용하므로 병렬연산이 불가하여 sequential operation에 $O(n)$이 필요히자미나, self-attention 모델은 input이 한번에 들어가며 이전 연산에 대한 의존성이 없으므로 모두 한번에 병렬처리가 가능하여 $O(1)$에 연산이 가능. 
 
--마지막으로 maximum path length는 long-term dependency와 관련이 되는데, 
+`RNN`의 경우 hidden state vector가 매 time-step마다 $W_hh$는 d x d 행렬이므로 계산량이 $O(d^2n)$ 이 된다.
+<br/> 이렇게 되면 공간적 측면에서도 연산량에 비례하는 공간복잡도를 가지게 됨.( backpropagation을 수행하려면 연산된 모든 값들을 저장하고 있어야 하기 때문. )
+<br/> self- attention의 경우 sequence 길이가 늘어남에 따라 저장해야하는 정보량이 $n^2$으로 늘어나게 되므로 문장의 길이가 길면 길수록 메모리가 많이 필요함 `결론적으로 attetntion이 RNN보다 메모리를 많이 차지`
+<br/>다만 RNN은 time-step마다 이전의 hidden state vector를 활용하므로 병렬연산이 불가하여 sequential operation에 $O(n)$이 필요히지만, self-attention 모델은 input이 한번에 들어가며 이전 연산에 대한 의존성이 없으므로 모두 한번에 병렬처리가 가능하여 $O(1)$에 연산이 가능. 
+
+<br/>마지막으로 maximum path length는 long-term dependency와 관련이 되는데, 
 $n$번째 정보는 첫번째 정보를 참조하기 위해 self-attention은 
 $O(1)$, RNN은 앞서 sequential operation에서와 같은 이유로 $O(n)$의 연산이 필요하다.
 
@@ -64,10 +66,13 @@ $O(1)$, RNN은 앞서 sequential operation에서와 같은 이유로 $O(n)$의 �
 - 이 구조에서 확인되는 Add $ Norm 단계, Positional Encoding 단계에 대해 알아보자.
 ##  Layer normalization
 ---
+![Layer.PNG](Layer.PNG)
 - Add & Norm 단계에서는 이전에 보았듯이 Residual Connectoin 기법을 사용하여 gradient vanishing을 해결하고 학습을 안정화 시킬 수 있다. 앞서 말했듯 이걸 쓰려면 Multi-Head Attentio에서는 최종 output이 input과 size가 같도록 마지막 linear layer를 구성해줘야 한다.
 - 여기서 Layer Normalization도 추가적으로 행해지는데 이는 아래와 같은 두 단계로 이루어 진다.
   
 ![Layernormalization.PNG](Layernormalization.PNG)
+
+
 1. 특정 노드에서 나와야 하는값에 가장 최적화된 평균과 분산을 가지도록 해준다. 각 sample에 대해서 평균을 빼주고, 표준 편차로 나누어 주면 된다.
 2. 각 sequence에 대하여 학습이 가능한 affine transoformation($ y = ax + b $ )를 행해준다.
 (normalization 대상과 affine transformation 대상이 다르다는 점에 주의.)
@@ -98,11 +103,12 @@ Decoder는 encoder와 완전히 동일한 self-attention 구조로 이루어져 
 ---
 ![Masked.PNG](Masked.PNG)
 
-- 학습단계에서는 batch processing을 위해 전체 sequence를 decoder에 동시에 input으로 주지만, 아래와 같이 뒷 단어에 대한 sfotmax 결과를 0 등을 활용하여 가려주어야(mask)한다.
+학습단계에서는 batch processing을 위해 전체 sequence를 decoder에 동시에 input으로 주지만, 아래와 같이 뒷 단어에 대한 sfotmax 결과를 0 등을 활용하여 가려주어야(mask)한다.
+<br/>
 
 이후 각 row에 대하여 확률값을 다시 normalize한다.
 예를 들어 첫번째 행은[1, 0, 0] 이 될 것이고 두번째 행은 약[0.47, 0.53, 0] 정도의 값이 될 것이다.
-
+<br/>
 self-attention의 장점이 모든 시점을 vanishing 없이 고려할 수 있다는 점이었지만, 실제 추론(inference)에 서는 미래 시점까지 고려할 수 없으므로 이와 같이 decoder 단에서는 과거 시점의 정보만고려한다고 볼 수 있다.
 
 
