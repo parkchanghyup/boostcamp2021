@@ -2,29 +2,49 @@
 
 ## Self Supervised pre-Training model
 ---
-- Transformer의 Self-Attention block은 범용적인 Encoder, Decoder로써 NLP뿐만 아니라 다양한 곳에 활용되고 있다.
-- 기존 Transformer는 6개의 block를 stack해서 encoder, decoder로 사용했지만 이후 나오는 것들은 더 많은 block과 대규모 학습 데이터를 사용해 self-supervised learning framework로 학습한 뒤 다양한 Task의 Transfer learning 형태로 Fine tuning 해서 사용한다.
-- 하지만 Transformer구조를 사용하는 생성 모델의 경우 Decode가 순차적으로 결과를 생성하기 때문에 여전히 Greedy decoding에서 벗어나지 못한다.
+<br/>Transformer의 Self-Attention block은 범용적인 Encoder, Decoder로써 NLP뿐만 아니라 다양한 곳에 활용되고 있다.
+<br/>기존 Transformer는 6개의 block를 stack해서 encoder, decoder로 사용했지만 이후 나오는 것들은 더 많은 block과 대규모 학습 데이터를 사용해 self-supervised learning framework로 학습한 뒤 다양한 Task의 Transfer learning 형태로 Fine tuning 해서 사용한다.
+<br/>자연어 처리에서 아직까지의 한계점은 greedy decoding을 근본적으로 해결하지 못한다는 것이다. 단어 생성시에는 왼쪽부터 하나하나 생성해야하며 sequence 하나를 한 번에 생성하는 방법에 대해서는 아직까지 연구가 진행중이다.
+
+
 
 # GPT-1
 ---
-![GPT1.PNG](GPT1.PNG)
-- 기본적으로 어떤 다양한 special token을 제안해서, 간단한 task뿐만 아니라 다양한 자연어처리분야의 많은 task를 동시에 커버할 수 있는 통합된 모델 제안
 
+<br/>
+GPT-1(Generative Pre-trainig) 에서는 <S\>, <E\>,$등의 다양한 special token을 활용하여 fine-tuning시의 성능을 극대화 한다.
+<br/>
+또한 pre-training구조를 활용하였는데, 이 구조를 활용하면 미리 학습된 일부 모델에 fine_tuning을 위한 layer만 덧붙여 하나의 모델을 다양한 tak에 활용할 수 있다는 장점이 있다.
 
 ## 모델 구조
 ---
+![GPT1.PNG](GPT1.PNG)
+
 - self-attention을 12개 쌓은 구조
 
+앞에서 이야기한 special token에 대해 알아보면, 기존처럼 문장의 시작에는 Start token을 넣어주고 위 그림에서는 문장의 끝에 Extract토큰을 넣어주었다. 여기서 이 extract token은 EoS의 기능 뿐만 아니라 우리가 원하는 downward task의 query벡터로 활용 된다.
 
-- 순차적으로 다음 단어를 예측하는 Language modeling Task를 통해 학습된다.
-- GPT-1은 다수의 문장이 존재하는 경우에도 큰 모델의 변경없이 사용할 수 있다.
-    - `긍정부정 예측` : Extract토큰(특별한 EOS토큰)을 붙혀 Encoding한 뒤 최종적으로 나온 Extract에 해당하는 Encoding vector를 output Layer를 통과한 결과로 Task를 수행한다.
-    - `Entailment `: 전제가 있을때 가설이 참인지 알아내는 Task로 전제와 가설사이에 Delim Token을 추가해 하나의 Sentence로 만들어 Encoding을 수행한다. 분류와 마찬가지로 Extract에 해당하는 Encoding vector를 output Layer를 통과한 결과로 논리적으로 내포 관계인지 모순 관계인지 확인한다.
-- 만약 특정 글들이 어떤 class에 속하는지를 학습하려 할 경우 GPT의 output Layer를 사용하지 않고 출력된 embedding vector를 사용해 이것을 분류를 위한 Layer를 만들어 학습시키는 것으로 Fine Tuning할 수 있다.
-- GPT의 경우 다음 단어를 예측해야하기 때문에 특정 time step에서 다음 단어의 정보를 사용하면 안된다(transformer 에서의 decoder에서 mask해서 처리한것처럼).
+<br/>
 
--> masked selfattention 사용
+예를 들어 사진의 첫번째 taks의 classificatoin 문제를 푼다고 하면, transformer 구조의 마지막 output으로 나온 extrack token을 별도의 linear layer에 통과 시켜 분류를 수행한다.
+
+<br/>
+
+두번째 task인 entailment에는 Delim(delimiter) token이 활용 되는데, 이것은 서로 다른 두 문장을 이어주는 역할을 한다. 두 문장을 각각 넣지 않고 Delim 토큰을 활용해 한꺼번에 넣어 두문장의 논리적 관계(참/거짓)을 파악한다.
+이것 역시도 마지막 Extract token을 finetuning된 linear layer에 통과시켜 정답을 얻을 수 있다.
+
+<br/>
+
+이러한 구조의 장점은, 같은 transformer 구조를 별도의 학습 없이 여러 task에서 활용할 수 있다는 것이다.
+우리는 downward task를 위한 마지막 linear layer만 별도로 학습시켜서 우리가 원하는 task에 활용하면 된다. 여기서 transformer 구조 부분이 미리 학습되어 활용할 수 있다는 의미로 `pre-training model`, 그 뒤 linear layer 부분은 `finetuning model`이라고 부른다.
+
+<br/>
+
+이 때 수행하고자하는 task에 대한 데이터가 거의 없을 때 pre-training model만 대규모의 데이터로 학습시킬수 있다면 어느정도 target task에도 보장되는 성능이 있다. 즉, pre-training model 의 지식을 finetuning 부분에 자연스럽게 전이학습 시킬 수 있다.
+
+<br/>
+
+활용한 구조를 더 자세히 보면 GPT-1에서는 12개의 decoder-only transformer layer를 활용하였고, multihead의 개수는 12개, 인코딩 벡터의 차원은 768차원으로 해주었다. 또한 ReLU와 비슷한 생김새를 가진 GeLU라는 activation unit을 활용하였다. pre-training단계에서는 language modeling 즉 이전과 같은 text prediction(seq2seq에서처럼)으로 transformer 모델을 학습시킨다.
 
 ## BERT
 ---
@@ -33,6 +53,7 @@
 - GPT-1의 경우 전후 문맥을 보지 않고 앞의 단어만 보고 단어를 예측하는 방식으로 학습을 시켰는데 BERT는 양쪽의 정보를 모두 고려하여 학습한다. (Transformer에서 encoder에서 사용하는 self attention을 사용)
     - 독해 빈칸추론 , 전화 하다가 중간이 끊켜서 들리면 전후 의 정보를 다 활용해서 예측.
 
+- BERT에서는 모델이 학습할 때 이전과 같이 next word language modelin(다음 단어 예측) 이 아니라, 일부 단어를 가려놓고(마스킹) 이를 맞추는 방식의 language modeling을 활용한다.
 - BERT는 15%의 단어를 MASK하여 MASK된 단어를 예측하도록 학습된다. 이러한 학습으로 인해 모델이 MASK가 포함되어 있는 처리한 모델로 학습이 될것이다.
 - pre training된 BERT를 문서 분류에 사용하려고하면 input data에 더이상 MASK가 존재하지 않아 학습이 제대로 되지 않을 것이다.
     - 해결
