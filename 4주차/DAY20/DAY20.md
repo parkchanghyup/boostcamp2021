@@ -162,41 +162,45 @@ concat한 벡터가 BERT를 통과하여 나온 encoding CLS token을 linear lay
 <br/>
 특히 최근에는 GPT 모델이 GPT-3까지 발전하면서 위와 같은 특성을 유지하면서도 성능이 대폭 개선된 모델이 생겨나게 되었는데, 이로 인해 model size 만능론이 등장하면서 리소스가 부족한 많은 연구자들을 슬프게 만들기도 했다.
 
-## GPT-2
+## GPT-2/GPT-3
 ---
+GPT-2,GPT-3는 GPT-1에 비해 크게 달라진 것은 없다. 가장 큰 차이점은 transformer layer의 크기를 더욱 늘렷다는 것이다. 다른 차이점에 대해 알아보자
+
+### GTP-2
 
 ![GPT-2.PNG](GPT-2.PNG)
-- Motivation
-    - Multitask learning as Question Answering
-        - 해당 논문에서는 다양한 자연어 처리Task가 질의응답으로 바꾸어 통합된 자연어 생성으로 다양한 Task를 처리할 수 있다고 말하였다.
-        - 예를들어 문장이 긍정, 부정인지 분류하고자하면 "해당 문장이 긍정이냐 부정이냐" 라는 answer을 한것이다.
-        - 요약 Task의 경우 "주어진 문장의 요약이 무엇이냐" 라는 answer을 한것이다.
-- Dataset
-    - 높은 수준의 글을 선별적으로 사용(Reddit..)
-- Preprocess
-    - Byte pair encoding
-- Modification
-    - Layer가 위로 올라감에 따라 index에 따라 init값을 더 작게 하였다.
 
-        → Layer가 위로 갈 수록 선형변환의 값이 0에 가까워지도록
+이전처럼 다음 단어를 예측하는 language modeling으로 학습시킨 pre-training model이 zero-shot shetting으로 down-stream task를 수행할 수 있게 됨.
 
-        →위쪽의 Layer가 하는일이 더 줄어들도록
+`zero-shot setting`이란 원하는 task를 위한 별도의 예제를 주지 않고, task에 대한 지시사항만을 모델에 전달하는 것을 말한다. 앞서 본 독해기반 질의응답으로 모든 task를 수행할 수 있다.
 
-- 번역, 요약등을 zero shot setting으로 잘 동작할 수 있다는 가능성을 보여주었음
+Dataset으로는 `BPE(Byte Pair ENcoding)token`을 사용하였고 Reddit에서 up-vote가 3개 이상인 글에 걸려있는 링크(즉, 사람에 의해 필터리오딘)를 총 4500만 개 긁어와서 이를 모델 학습에 이용하였다. 그 외에도 위키피디아 문서등을 이용하였는데 이와 같이 크롤링을 하되 많은 사람들에게 인정받아 신빙성이 보장될만한 글들을 모두 학습에 이용하였다. 이에 따라 training data의 양과 질을 모두 향상 시킬 수 있었다 .
 
-    → 번역, 요약을 위한 학습 데이터를 학습한것이 아닌 Language modeling을 통해 학습한 모델을 가지고 ............?
+모델의 측면에서는 앞서 말했듯이 절대적인 레이어의 양을 늘렸음.
+또한 layer normalization의 위치가 변경된 부분이 있고, 위쪽(깊은) 레이어일수록 weight parameter를 작게(1√n 배,n은 residual layer의 수) 하여 위쪽에 있는 레이어의 역할이 줄어들 수 있도록 구성되었다.
+
+pre-traing 모델만으로 CoAQ(conversation Question answering)에서 55정도의 F1 score를 라벨링된 데이터 없이 내놓았다. BERT가 같은 데이터에 대하야 89라는 높은 F1 score를 내놓았지만, 55라는 score에서도 어느정도 가능성을 엿볼 수 있음.
+
+GPT-2모델이 놀라웠던 점은, 어떤 이야기 문단을 주고 모델에게 이어서 이야기를 써보라고 하였을 때 모델이 사람이 쓴 것같은(말도 안되는 말이지만)글을 써낸다는 것이었다. 심지어 이것이 down-stream task 기반 fine-tunning이 되지 않은 모델이 내놓은 성과인데 이로 인해 많은 윤리적 문제가 우려되기도 함.
+
+
 
 ---
 
-# GPT-3
+### GPT-3
 
 - GPT-2에 비해서 구조적 변화가 아닌 더 많은 Layer, 더 많은 학습데이터를 사용
 - GPT-2로 보여주었던 Zero shot setting에서의 가능성을 놀라운 수준으로 올렸다.
+- 또한 few-shot setting으로 별도의 학습 없이 소량의 test data로도 원하는 답을 내놓을수 있게됨.
 
 ![GPT-3.PNG](GPT-3.PNG)
-- 별도의 fine tuning 없이 번역 등의 Task가 잘 수행된다.
-- 모델이 커질수록 더 좋은 성능이 나온다는 통계를 보여주었음
 
+- 별도의 fine tuning 없이 번역 등의 Task가 잘 수행된다.
+- zero-shot, one-shot, fw-shot 등 여기에도 줄 데이터의 수를 조절하면서 줘볼 수 있는데 아래 그래프와 같이 few-shot에서 parameter 수가 늘어날수록 더 높은 폭의 향상을 보여줌.
+
+![GPT-3(2).PNG](GPT-3(2).PNG)
+
+- pre-training 모델은 모델 사이즈가 커지면 계속해서 성능이 더욱 좋아진다. 특히 few-shot을 적용하면 zero-shot이나 ont0sot에 비해 상대적으로 그 정확도가 더 빨리 올라가는 것을 확인할 수 있음.
 ---
 
 ## ALBERT
@@ -218,7 +222,9 @@ concat한 벡터가 BERT를 통과하여 나온 encoding CLS token을 linear lay
 
 ---
 
-# Light-weight models
+# 모델 경량화(Light-weight models)
+
+모델 경량화의 최근 트렌드 방향은 스마트폰과 같은 소형 디바이스에서도 모델을 돌릴 수  있도록 하는 것이다. 이에 관련하여 다양한 모델이 있지만 2가지 모델에 대해서만 알아보자.
 
 ### DistillBERT
 
