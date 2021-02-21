@@ -1,5 +1,7 @@
 # 수업 복습
 
+
+[참고블로그](https://olenmg.github.io/2021/02/19/boostcamp-day20.html)
 ## Self Supervised pre-Training model
 ---
 <br/>Transformer의 Self-Attention block은 범용적인 Encoder, Decoder로써 NLP뿐만 아니라 다양한 곳에 활용되고 있다.
@@ -12,7 +14,7 @@
 ---
 
 <br/>
-GPT-1(Generative Pre-trainig) 에서는 <S\>, <E\>,$등의 다양한 special token을 활용하여 fine-tuning시의 성능을 극대화 한다.
+GPT-1(Generative Pre-trainig) 에서는 < S > / < E > / $등의 다양한 special token을 활용하여 fine-tuning시의 성능을 극대화 한다.
 <br/>
 또한 pre-training구조를 활용하였는데, 이 구조를 활용하면 미리 학습된 일부 모델에 fine_tuning을 위한 layer만 덧붙여 하나의 모델을 다양한 tak에 활용할 수 있다는 장점이 있다.
 
@@ -205,21 +207,66 @@ GPT-2모델이 놀라웠던 점은, 어떤 이야기 문단을 주고 모델에�
 
 ## ALBERT
 
-- 기존 BERT가 가지던 성능의 하락없이 모델 size와 학습 시간이 빨라지는것을 목표로 모델제시
+- BERT의 경량화 모델로 다양한 기법을 활용하여 BERT와 비슷한 성능은 유지하되 공간/시각적 측면에서 필요 리스소 양을 줄였다. 지금부터는 BERT의 경량화를 위해 ALBERT에 어떠한 기법들이 사용되었는지 알아보자.
 
 ![albert.PNG](albert.PNG)
 
-- Cross-Layer Parameter sharing
-- Sentence order Prediction
+`Factorized Embedding Parameterization`
+
+residual connection의 문제는 multihead attention 사용시 otuput과 input의 dimension이 같아야하기 때문에 처음에 input을 통과시키는 embedding layer의 거대한 parameter를 학습시키기 위한 비용이 너무 많이 든다는 것이다.
+
+이 기법은 word 자체에 대한 정보를 담기 위해 실제로는 많은 차원이 필요하지 않나느 것이 주요 아이디어다. 단어를 BERT에 넣어주면 그 결과로 나오는 output은 context-dependent, 즉 단어 그 자체뿐아니라 문맥에 관한 정보까지 담겨진 베겉가 나오게 된다. 하지만 문맥에 대한 저옵가 필요벗는, 즉 context-independdent한 부분인 input단에서는 단어를 표현하기 위해 그렇게까지 큰 차원이 필요하지 않다.
+
+따라서 input 부분에서는 단어 자체의 embedding을 줄이기 위해 기존 embedding layer의 크기를 V x H에서 V x E로 줄이고 이를 원래 input 차원으로 다시 늘려주기 위해 그 뒤에 E x H의 linear layer를 하나 더둔다.
+
+이렇게 하면 원래 word vector를 보통 768차원으로 두는ㄷ E를 128정도로 두어 input단의 embedding layer의 parameter 갯수를 V * H에서 V * E + E * H로 대폭 줄일 수 있다. input 단에서만 parameter를 줄여주는 것이 모델 전체에 얼마나 큰영향을 줄지 처음에는 이해가 안됬지만, self-attentino 단에서 학습시켜야하는 parameter는 단어의 개수에 의존적이지 않고 곶가 몇십, 몇백개 남짓되는 레이어 갯수에 의존적이지만 embedding layer의 parameter는 몇만, 몇십만 개가 되는 단어의 개수에 정비례하므로 매우 많은 양의 parameter가 embedding layer에 존재하기 때문에 이를 줄이는 것은 모데 전체의 사이즈를 줄이는데에 어느정도 기여할 수있다.
+
+`Cross-Layer Parameter sharing`
+
+embedding layer쪽 parameter를 줄이는 것만으로는 부족했던 모양인지, 이번에는 각 attention layer의 parameter를 공유하는 방법도 제시한다. 참고로 multihead attention의 여러 head들끼리 parameter를 공유한느게 아니라, multihead attention이 퐇마된 큰 단위의 encoder block layer 여러 개가 서로 parameter를 공유하는 것이다.
+
+![Cross.PNG](Cross.PNG)
+
+이를 위 그림처럼 표현할 수 있으므로 Recursive Transformer라고도 부를 수 있다. 아무튼 이러게 self-attention layer의 parameter를 고융해보았더니 성능이 크게 떨어지지 않는 놀라운 결과를 가져왔다.
+
+한편 encoder blcok 안에는 mlutihead self-attention 뿐만 아니라, Feed-forward network(FFN)라는 fully connected later 도 존재한다. 여기서 이 layer의 parameter까지도 공유할 수 있는데, 실험 결과  이를 공유하는 것은 약간 큰 폭의 성능 하락을 가져왔다.
+
+왜 FFN의 paramerter를 공유하는 것이 성능 하락을 가져왓는지는 논문에서도 제대로 설명되어 있지 않지만, 아무튼 layer간 parameter를 sharing 하는 것이 큰 성능 하락을 가져오지 않는다는 점에 큰 의의가 있다.
+
+
+`Sentence order Prediction`
+
+기존에 BERT 모델에서 학습 방법으로 채택한 Masking과 Next Sentence Prediction(NSP)중 NSP 방법의 경우 이후 연구에서 학습에 큰 도움을 주지 않는다는 점이 밝혀지면서, 이에 대한 대체 방안으로 Sentence Order Predicion(SOP)라는 방법이 제시되었다.
+
+기존 NSP에서는 두번째 문장이 실제 문장(positive examples)과 임의로 뽑은 문장(negative example)으로 등장하게 된다. 그런데 만약 두번째 문장으로 negative example이 주어질 경우 앞 문장과 topic이 아예 다를 가능성이 매우 크므로 모델이 정답을 맞히기가 너무 쉬워진다.
+
+따라서 SOP에서는 실제로 연속인 두 문장의 순서만 바꾼 문제를 negative example로 준다. 이렇게 하면  두 문장의 topic이 같기 때문에 SOP는 정말 문장의 순서를 맞혀야하는 보다 고도화된 문제로써 사용이 가능하다. 실제로 NSP로 학습된 모델은 SOP 문제를 잘 맞히지 못하지만, SOP문제로 학습된 문제ㅡㄴ 두 문제 모두를 잘 맞힐 수 있단느 실험 결과가 있다.
+
+### Summary 
+
+![Summary.PNG](Summary.PNG)
+
+지금까지 살펴본 ALBERT 모델은 세 가지 기법을 적용하면서 parameter는 대폭 줄이고, 모델이 보다 유의미한 학습을 할 수 있도록 task도 일부 조정하였다. 그 결과 위와 같이 ALBERT가 기존 BERT 모델에 비해 비슷하거나 혹은 더 좋은 성능을 보인다. parameter 수를 대폭 감소싴켰는데도 성능이 떨어지지 않았다는 점이 ALBERT모델의 놀라운 점이라고 할 수 있다.
+
 
 ---
 
 ## ELECTRA
 ---
 ![ELECTRA.PNG](ELECTRA.PNG)
-- Language model을 통해 단어를 복원해주는 generator라는 모델을 두고, 주어진 Masked Language를 generator를 통해 Masked된 단어를 예측하고 Discriminator(ELECTRA)모델을 사용해 각각의 단어가 원래의 단어인지 replace된것인지  확인하는것으로 학습한다.
-- 학습된 Discriminator를 pre-training model로 사용한다.
 
+ELECTRA(Efficiently Learning an Encoder that Classifies Token Replacements Accurately)모델은 GAN 모델과 매우 유사한 구조를 띤다. Generator, Discriminator로 이루어져 있으며 이들은 서로 적대적 학습을 한다.
+
+우선 generator는 마스킹되어있는 단어를 맞히는(즉, 적절한 단어를 생성하는) 역할을 한다. 또한 discriminator는 이렇게 generator가 생성한 단어가 포함된 완성된 문장을 받아 어떤 단어가 generator가 만들어낸 단어인지 구별해낸다.
+
+즉, generator는 discriminator를 속이기 위해 더욱 완벽한 단어를 생성하려고 학습할 것이고, discriminator는 이에 맞춰 더욱 더 고도화된 예측 능력을 갖출 수 있도록 학습할 것이다.
+
+그리고 마지막으로 충분히 학습이 되었으면, discriminator를 pre-training model로 활용 한다.
+
+
+![ELECTRA2.PNG](ELECTRA2.PNG)
+
+replaced token detection(대체된 단어 예측, ELECTRA)와 masked language model(MLM, 마스킹된 단어생성, BERT)은 모두 학습을 많이 함에 따라 위와 같이 성능이 계속 올라간다. 다만  같은 학습 step에서 ELECTRA가 더 우수한 성능을 보인다. 물로 generator가 MLM의 역할을 하긴 하지만 우리는 discriminator를 pre-training model로 활용하므로 ELECTRA는 replaced token detection 기반 학습을 한다고 말할 수 있다.
 ---
 
 # 모델 경량화(Light-weight models)
@@ -228,10 +275,25 @@ GPT-2모델이 놀라웠던 점은, 어떤 이야기 문단을 주고 모델에�
 
 ### DistillBERT
 
-- Transformer의 구현체를
+여기서는 student model과 teacher model이라는 두 가지 모델을 두어 student가 teacher을 모사할 수 있도록 학습시킨다. 구체적으로 말하면, student의 softmax 결과가 teacher의 softmax에 가까워지도록 학습한다.
+
+즉 student 입장에서의 ground truth는 teacher model의 sotfamx 결과값이 되고 이에 맞추어 loss를 설게하게 된다.
+이에 따라 teachar의 distribution을 student가 학습하게 되는데, student의 modelsize는 teacher에 비해 작은 사이즈로 설계되므로 이 방법을 통해 큰 모델(teacher)에 근사하는 겨로가를 내놓을 수 있는 보다 경량화된 모델(student)을 구현할 수있게 된다.
+
+
 
 ### TinyBERT
 
+여기서는 softmax의 결과뿐만 아니라 중간결과물인 self-attention의 encoding matrix $W_k,W_q,W-v$그리고 그결과로 나오는 hidden state vector 까지도 student network이 담도록 학습이 진행 된다.
+
+그런데 student model의 hidden state vector는 teacher model의 hidden state vector볻 ㅏ차원이 작을 수 있다. 따라서 teacher쪽에 이 벡터의 차원수를 추기해주는 linear layer를 추가적으로 둬서 student model의 loss를 구할 때 문제가 없도록 설계해 준다.
+
 ---
 
-# Fusing Knowledge Graph
+## Knowledge graph와 Pre-training Model
+
+BERT 모델의 한계는 기본적인 외부지식(상식)이 없기 때문에 주어진 지문에 직접적으로 제시되지 않은 숨겨진 정보를 파악하지 못한다는 것이다.
+
+가령, ‘나는 꽃을 심을 것이다. 그래서 땅을 팠다.’라는 지문과 ‘나는 집을 지을 것이다. 그래서 땅을 팠다’라는 지문이 있다고 가정해보자. 이때 ‘땅을 왜 팠니?’라는 질문을 던지면 모델은 각각의 상황에 대하여 ‘꽃을 심기 위해’, ‘집을 짓기 위해’ 라는 답을 잘 줄 것이다. 그런데 ‘땅을 무엇으로 팠니?’라는 질문을 던지면 지금까지 우리가 배운 모델들은 이에 대해 올바른 답을 제시하지 못한다. 왜냐하면 땅을 무엇으로 팠는지에 대한 정보는 지문에 없기 때문이다. 하지만 사람은 이에 대한 답으로 ‘모종삽’, ‘포크레인’ 정도를 유추할 수 있다.
+
+이러한 한계를 극복하기 위해 language model을 Knowledge graph와 융합하게 된다. Knowledge graph에서는 세상에 존재하는 다양한 개체들을 잘 정의하고 그들간의 관계를 잘 정형화해서 만들어둔 것이다. 위 예시에서와 같은 경우 ‘땅’ 이라는 개체와 ‘파다’라는 개체 사이에 도구로써의 개체로 ‘모종삽’, ‘포크레인’ 등이 관계되어 있을 수 있다. 따라서 knowledge graph와 우리가 앞서 배운 모델을 잘 결합해주면 모델이 외부 정보에 기반한 질의응답도 잘 해낼 수 있도록 학습시킬 수 있을 것이다.
