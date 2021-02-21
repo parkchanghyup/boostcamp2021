@@ -2,91 +2,85 @@
 # 수업복습
 ---
 
-## NLP(Natural language processing)
-- 딥러닝 기술의 발전을 선도
-- 가령 low-level parsing을예로들면
-    - 문장을 이루는 각 단어들을 token이라 부르고 단어 단위로 쪼개나가는 과정을 `tokenizaiton`이라 부름
-    - 문장은 이런 토큰들이 특정 순서로 이뤄진 sequence라 볼 수 있다.
-    - `stemming` : 단어의 어근 추출
-- Word ans phrase level
-        - Named entity recognition(NER)은 단일 단어 혹은 여러단어로 이뤄진  어떤 고유명사를 인식하는 task
-            - newyork times 를 하나의 단어로 인식해야됨 (NewYork / times (x))
-        - POS tagging : word들이 문장내에서 품사나 성분이 뭔지 알아내는 task
-- sentece level(문장단위 분석)
-        - 감정 분석, 기계 변역(i study math -> 나는 수학을 공부한다) 
-- multi-sence and parapraph level
-        - `Entaliment predciont`: 두 문장 간의 논린적인 내포, 모순관계를 예측, 
+## 자연어 처리의 다양한 task
+  1. Low-level parsing
+    - `Tokenization` : 문장을 이루는 단어, 정보 단위로 쪼갬, 문장은 토큰의 나열
+    - `stemming`: 어미의 변화가 있더라도 본래의 의미를 보존하는 어근을 추출
+  2. Word and phrase level
+    - `NER(Named entity recognitaion)` : 단일 단어, 여러 단어로 이뤄진 고유명사를 인식하는 task
+    - `POS(Part-of-speech) tagging` : 단어의 품사(부사구, 형용사구)
+  3. Sentence level
+    - `sentiment analysis`: 긍정/부정의  어조 분류
+    - `machine translation` : 영어 -> 한글, 주어진 각 단어를 번역, 타겟 언어의 어순에 맞게
+  4. Multi-sentence and paragraph level
+    - `Entaliment predciont`: 두 문장 간의 논린적인 내포, 모순관계를 예측, 
           - ex. 어제 존이 결혼을 했다. 어제 최소한 한명이 결혼을 했다. -> 첫문장이 참이면 두번째 문장도 참 ,
           - 그런데 두번째 문장이 거짓이라고 하면 첫번째 문장도 당연히 거짓
-        - 
-        - `questoin answereing` : 구글에 어떤 질문을 검색하면 그 질문이 포함된 키워드를 결과창에 뛰우지않고, 질문자체에 답을함.
-        - dialog systems : 챗봇 대화 
-        - summarization : 주어진 문서를 요약
+    - `questoin answereing` : 구글에 어떤 질문을 검색하면 그 질문이 포함된 키워드를 결과창에 뛰우지않고, 질문자체에 답을함.
+    - `dialog systems` : 챗봇 대화 
+    - `summarization` : 주어진 문서를 요약
 
+---
 ## text mining 
-  - 빅데이터 분석과 관련된 경우가 많음
-  - 과거 1년 간의 뉴스기사를 모아서 거기에 나타난 특정 단어의 빈도수를 분석하거나 기사의 트렌드를 분석. 어떤 유명인의 이미지가 -> 사건이 터져서 어떻게 안좋게 이미지가 변했는지,
-  - 어떤 상품이 출시 되었을 때 그 상품에 대한 소비자 반응을 얻음
-  - `topic modeling `
-      - 어떤 상품에 대해 사람들이 세부적인 요소를 이야기 하고있다면 그중 어떤것이 유용한 정보인지 알아낼 수 있다.
-  - twiter나 facebook을 분석해서 현대인들의 패턴 분석, 사회과학분야에서의 인사이트 발견
+
+1. 유용한 정보 및 인사이트를 문자와 문서 데이터를 통해 추출
+  - 빅데이터에서 AI 관련 단어들을 추출 하여 분석
+2. 문서 군집화 Document clustering(e.g. topic modeling)
+  - 비슷한 내용의 뉴스 데이터 그룹화, 특정 제품의 특성과 의견을 빠르게 얻어낼 수 있음
+3. Highly related to computational social science
+  - 소셜 미디어 데이터로 분석한 최근 신조어, 사회 현상 발견
+
+
     
 ## Inforamtion retrieval
   - 검색기술 연구
   - 현재 검색기술의 성능은 점차 고도화되면서 검색기술은 어느정도 완성됬다고 할 수 있음.
   - 따라서 기술발전도 앞서 말한 텍스트마이닝이나 nlp보다 느림 (거의 완성이니까)
-  - 그러나 검색 기술에서도 추천 시스템 분야는 좀 활발하게 발전됨 .
+  - `추천 시스템`은   적극적이고 자동화된 새로운 검색이라 볼 수 있음(활발히 활용 중)
     
-
 ## Trends of NLP
 
-- 대부분의 머신러닝 기술은 숫자로 이뤄진 데이터를 필요로 하기때문에
-텍스트 데이터를 먼저 단어단위로 분리하고, 단어를 벡터화 시켜줌  
-그래서 워드를 단어를 벡터화 시키는 것을 `워드 임베딩`이라고 한다.  
-<br/>
+- `word embedding` : 문장 내 각 단어가 의미를 갖도록 벡터 공간 내 하나의 점과 매핑(word2vec)
+- `RNN-family models` : 문장이라는 시퀀스 데이터에 맞는 모델들(LSTM, GRU, transformer)
 
-- 그리고 단어들의 순서가 중요하기 때문에 시퀀스 데이터를 처리하는데 특화된 모델 구조로 `RNN`이 자연어 처리의 핵심모델로 자리잡음
-RNN 계열중에서 `LSTM`과 `GRU (LSTM을 단순화시킨 모델)` 모델이 많이 사용됨
+    - 각 언어의 어순 등 rule 기반으로 수행되던 알고리즘을 벗어나(많은 예외사항과 다양한 사용 패턴이 존재)
 
+    - 영어와 한글이 잘 번역된 문장을 학습하여 특별한 언어학적인 룰을 배제하고, 단지 시퀀스 데이터를 학습할 수 있는 RNN 기반의 모델을 활용하자 성능이 크게 증가했음
 
+- `Transformer model` : 현재 가장 활발히 활용 및 연구되고 있는 모델
 
-- 2017년 구글에서 발표한 `attention is all you need` 이후
-기존의 RNN 기반의 자연어 처리 모델의 구조를 `self-attetion` 모듈로 완전히 대체할 수 있는 `transformer` 가 등장 -> 성능도 다좋음
-> 요즘 그래서 대부분 자연어 처리에서는 `transformer` 를 사용
+    - 핵심 모듈인 self-attention 모듈을 단순히 계속 쌓아 나가는 식으로 모델의 크기를 키움
 
-- Transforemr는 원래 기계번역을 위하 등장.
-- 기계번역을 위해서 많은것들을 직접 설정해줘야했지만 언어의 다양한 패턴에 일일히 대응하는것에 한계가 있었음 
-> -> 딥러닝 기반으로 기계번역을 해보니 성능이 월등히 올라감. 
-> 구글,파파고 -> 기계변역 
+    - 이 모델은 대규모 텍스트 데이터를 통해 소위 자가지도학습 수행(태스크를 위한 별도의 레이블이 필요하지 않은, 범용적 태스크)
 
-기계번역에서  새로운 성능 향상을 가져온게 `transformer`
-tranformer은 처음에는 기계번역을 위해 만들어졌지만 시계열 ,영상처리, 신물질 개발등 다양한 분야에 활발히 적용중 
+    - 다른 여러 태스크에 전이학습의 형태로 적용할 시 각 태스크에 특화되도록 설계된 기존 모델들보다 훨씬 월등한 성능을 냄
 
+    - **범용 인공지능 기술** : BERT, GPT-2, GPT-3
 
-- 자연어 처리에서 self- superviser leanring 은 입력문장이 주어질때 입력문장중 한 단어를 가리고 그 단어를 맞출수있게, 하는 task 에 해당.
-  - 대표모델 bert, gtp - 3 등
+- `자가지도학습(self supervised learning)` : 입력 문장이 주어져 있을 때 일부 단어를 masking 하여 그 단어를 맞추도록 하는 태스크(그 의미와 품사가 어울리도록 예측)
 
-이것들은 특정 task에서만 적용이 가능한게 아니라 범용으로 적용가능하다
-따라서 인공지능 기술은 한단계 발전을 거듭하게됨.
-
-- 최근 기술적 트렌드로볼때 self- superviser leanring을 위해서는 대규모 데이터와, gpu 가 필요함
-- 그래서 facebook, google등에서 함 (대규모 자산 필요->개인이 힘듦)
-
+    - 대규모의 데이터와 엄청난 GPU resource가 필요함
+    - GPT-3는 모델 학습하는 데만 엄청난 전기세가 사용됨..막강한 자본력 필요
 ## bag-of words
 --- 
 1.  문장이 주어졌을때 문장을 단어단위로 나눠서 사전을 만듦
 2.  사전을 원-핫 인코딩 해준다.
-    - bag-of-words는 각 단어간 거리는 루트 2
-    - 코사인 유사도는 0
-3. 문장이나 누서를 대표하는 원핫 벡터는 다음과 같이 나타낼 수 있음.
+    - bag-of-words는 각 단어간 거리는 $
+\sqrt{2}$, 코사인 유사도 0
+    
+3. 문장이나 문서를 대표하는 원핫 벡터는 다음과 같이 나타낼 수 있음.
 ![bag_of_word_1.PNG](bag_of_word_1.PNG)
 
 ## NaiveBayes Classifier for Document Classification
 ---
+$\begin{aligned} c_{M A P} &=\underset{c \in C}{\operatorname{argmax}} P(c \mid d) \\ &=\underset{c \in C}{\operatorname{argmax}} \frac{P(d \mid c) P(c)}{P(d)} \\ &=\underset{c \in C}{\operatorname{argmax}} P(d \mid c) P(c) \end{aligned}$
+
 ![NaiveBayes_1.PNG](NaiveBayes_1.PNG)
 ![NaiveBayes_2.PNG](NaiveBayes_2.PNG)
 
-
+- 가장 큰 확률 값을 갖는 클래스로 할당(예측)
+- 특정 클래스에 해당하는 단어가 한 번도 등장하지 않는 경우 확률이 0으로 예측됨
+  -> 여러가지 기법을 적용하여 해결
 
 ## word embedding
 ---
@@ -104,6 +98,7 @@ https://wikidocs.net/22660
 
 ### prorperty of word2vec - Intrusion Detection
 ---
+![pow.PNG](pow.PNG)
 - 여러단어가 주어질떄 나머지 단어와 의미가 가장 상의한 단어를 찾아내는것
 - word2vec의 임베딩 벡터 활용
     - 유클리드거리를 구해서 평균 거리가 가장 먼 단어 를구함
@@ -112,13 +107,22 @@ https://wikidocs.net/22660
 
 ## Glove : word embedding model
 ---
-- word2vec과 가장 큰차이점은 loss functio을 달리함 ?
-- 특정한 입출력 쌍이 자주등장한ㄴ경우
-- word2vec그경우 그 데이터 아이템이 자연스레 여러 번학습됨 -> 내적값이 즈악
-- 중복되는 계산 줄여줌 -> 학습이 더빠름 -> 적응량의 데이터에도 적합
-? ? ?
+⇒ 각 단어 쌍의 유클리디안 거리를 계산하여 가장 먼 단어 추출
 
-성능도 비등비등 둘다 임베딩 알고리즘
+#### Word2vec과 가장 큰 차이점
+---
+- 새로운 형태의 loss function : $J(\theta)=\frac{1}{2} \sum_{i, j=1}^{W} f\left(P_{i j}\right)\left(u_{i}^{T} v_{j}-\log P_{i j}\right)^{2}$  
+$\log P_{i j}$ : 말뭉치 전체에서의 동시에 나타나는 경우의수 $P_{ij}$에 로그를 취한 값
+$u_{i}^{T} v_{j}$ : 입력 워드의 임베딩 벡터($U_i$), 출력 워드의 임베딩 벡터($v_i$)간의 내적값<br/>
+**위 두값이 최대한 같아지도록 학습**
+<br/>
+- 빠른 학습 및 적은 데이터(corpus)에서도 잘 동작
+
+  ⇒ `Word2vec` : 자주 등장한 특정 입출력 간의 학습이 더욱 빈번하게 되어 내적 값이 더 커짐
+
+  ⇒ `GloVe` : 애초에 어떤 단어 쌍이 특정 윈도우 내에서 동시에 등장한 횟수를 미리 계산하여 로그를 취한 값을 입출력 두 단어의 내적 값의 ground-truth로 사용해서 학습을 진행(중복 계산 방지)
+
+
 
 ## CBOW (Continuous Bag-of-Words)
 ---
@@ -137,17 +141,19 @@ https://wikidocs.net/22660
     - Output(주변 단어): "A", "cute", "is", "walking"
 
 
+## further Questions
+---
+`Word2Vec`과 `Glove` 알고리즘이 가지고 있는 단점 ?
+1. **'어떤 단어 쌍이 비슷하다(similar)'**는 말의 의미
 
-```python
+    ⇒ `춥다`와 `덥다`는 반의어(antonyms)지만 '기온'이라는 속성을 매개로 강한 관련을 갖는다
 
-```
+    e.g., `흑`과 `백`, `소음`과 `적막` 등 특정 속성의 관점에서 보면 반의 관계에 있는 단어 쌍들도 **서로 비슷하다고 볼 수 있음**
 
+    ⇒ `코사인 유사도` : 유의 관계, 반의 관계, 상하 관계 등 **관련성(relevance)을 대변**함 
 
-```python
-
-```
-
-
-```python
-
-```
+2. **훈련 데이터에 함께 등장하는 쌍이 없는 경우** : 스무딩
+3. **동음이의어 처리** : 동음이의어를 동일한 벡터로 임베딩 ⇒ `ELMo` 사용
+4. **윈도우 내 동시 등장한 단어들 중에서도 중요도가 있지 않을까?** : `가중 임베딩`
+5. **OOV 문제, rare word 문제** : 각 단어를 문자(자,모) 단위의 n-gram으로 표현하는 `FastText` 활용
+6. GloVe는 우선 학습말뭉치를 대상으로 co-occurrence 행렬 X를 만드는 것에서부터 학습을 시작합니다. 단어 개수가 1만개 정도 되는 말뭉치라면 요소 개수가 1억(10000 x 10000)이나 되는 큰 행렬을 만들어야 하는 것이죠. 이후 지금까지 설명드린 목적함수를 최소화하는 임베딩 벡터를 찾기 위해 matrix factorization을 수행해야 합니다. 계산복잡성이 꽤 크다는 이야기이죠.

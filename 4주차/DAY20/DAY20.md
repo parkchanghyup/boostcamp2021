@@ -50,26 +50,55 @@ GPT-1(Generative Pre-trainig) 에서는 <S\>, <E\>,$등의 다양한 special tok
 ---
 ![BERT.PNG](BERT.PNG)
 - 현재까지도 가장 널리쓰이는 PRE-TRAINING 모델
+<br/>
 - GPT-1의 경우 전후 문맥을 보지 않고 앞의 단어만 보고 단어를 예측하는 방식으로 학습을 시켰는데 BERT는 양쪽의 정보를 모두 고려하여 학습한다. (Transformer에서 encoder에서 사용하는 self attention을 사용)
     - 독해 빈칸추론 , 전화 하다가 중간이 끊켜서 들리면 전후 의 정보를 다 활용해서 예측.
-
+<br/>
 - BERT에서는 모델이 학습할 때 이전과 같이 next word language modelin(다음 단어 예측) 이 아니라, 일부 단어를 가려놓고(마스킹) 이를 맞추는 방식의 language modeling을 활용한다.
-- BERT는 15%의 단어를 MASK하여 MASK된 단어를 예측하도록 학습된다. 이러한 학습으로 인해 모델이 MASK가 포함되어 있는 처리한 모델로 학습이 될것이다.
-- pre training된 BERT를 문서 분류에 사용하려고하면 input data에 더이상 MASK가 존재하지 않아 학습이 제대로 되지 않을 것이다.
+<br/>
+- BERT에서는 학습을 할 때 전체 글에서 일정 퍼센트만큼의 단어를 가려놓고 그 단어가 무엇인지 맞히는 학습(Masked Language Model,MLM)을 하게된다. 여기서 몇%를 가를지도 하나의 hyperparameter가 되는데, 일반적으로 15%가 최적이라고 알려져있다. 
+
+<br/>
+
+- pre training된 BERT를 문서 분류에 사용하려고하면 input data에는 MASK가 존재하지 않아 학습이 제대로 되지 않을 것이다.
     - 해결
-        - 15%의 MASK로 치환될 단어들 중 80%를 MASK Token으로 변경한다.
-        - 15%의 MASK로 치환될 단어들 중 10%은 random word로 치환한다.
+        - 15% 중 80%는 실제로 masking 한다.
+        - 10%는 임의의 단어로 바꿈
             - 문법에 맞지 않는 단어도 원래의 단어로 잘 복원할 수 있도록 문제의 난이도를 높힘
-        - 15%의 MASK로 치환될 단어들 중 10%은 변경하지 않는다.
+        - 10%는 바꾸지 않고 그대로 둔다.
             - 결과에서 해당단어는 변경되지 않고 나올 수 있도록 문제의 난이도를 높힘
+
+또한 language modeling 뿐만 아니라, 두 문장 A, B를 주고 B가 A의 뒤에 올 수 있는지 분류하는 학습(Next Sentence Prediction, NSP)도 하게 된다. 이 task는 binary classification task가 될 것이며, 모델은 Label로 IsNext혹은 NotNext를 내놓게 된다. 
+
+<br/>
+
+그리고 GPT-1에서의 sepcial token을 BERT에서도 비슷하게 활용하는데, 앞서 본 NSP에서의 classification task를 위해 이번에는 문장 맨 앞에(GPT-1에서는 맨 뒤에 Extract token을 놓았다) CLS(classification)token을 두어 이 token에 대한 output을 분류에 활용한다.
+CLS token의 output은 layer에 통과되어 분류를 위한 결과를 내놓게 된다.
+
+<br/>
+
+![BERT2.PNG](BERT2.PNG)
+
+<br/>
+
+위 두학습에 더불어 positional encoding시 SEP(seperate)토큰으로 나눠진 문장이 있으면 각 문장에 별도의 위치정보를 주입해주기 위해 segment  embedding을 추가적으로 더해주었다. 그리고 BERT에서는 positional encoding 자체도 기존 주기함수가 아니라 별도의 학습을 통해 구하여 더해주었다.
+
+<br/>
+
+BERT에서는 base model에 self-aeention layer 12개,
+multihead 12개, 인코딩 벡터의 차원을 768개로 두었으며(GPT-1 과 동일) 보다 성능을 끄어올린 large model에서는 self-aeention layer 24개, multihead 16개 인코딩 벡터의  차원을 1024개로 주었다. 그리고 데이터로써 byte pair encoding의 변형 알고리즘인 WordPiece  model을 활용하여 인코딩된 WordPiece embedding 30000개를 활용하였다. 
+<br/>
+ 
 - WordPiece embedding
     - 좀더 세밀한 단위로 단어를 구별한다 (pre-training의 경우 pre, training 같이)
 - Segmentation embedding
     - 문장 레벨에서의 position을 반영한 벡터
-    ![BERT2.PNG](BERT2.PNG)
+    
     - He의 경우 전체 위치를 볼 경우 6번째 위치이지만 문장별로 본다면 2번째 문장의 첫번째 단어가 된다. 이를 고려해기 위해 segment embedding vector를 추가로 사용한다.
 
 ---
+
+
 
 ## bert _summary
 1. model architecture
@@ -83,7 +112,11 @@ GPT-1(Generative Pre-trainig) 에서는 <S\>, <E\>,$등의 다양한 special tok
     - Learned positional embedding
     - [CLS] - Classification embedding
     - segment embedding
-    - 
+
+
+
+
+
 
 ## Fine tunning
 ---
@@ -91,17 +124,14 @@ GPT-1(Generative Pre-trainig) 에서는 <S\>, <E\>,$등의 다양한 special tok
 - 내포, 모순관계를 알기위한 모델의 경우 두개의 문장을 [SEP]를 사용해 하나의 input으로 사용하고 [CLS]에 해당하는 encoding vector를 output layer로 주어 Task를 수행한다.
 - 단인 문장 분류 문제의 경우도 [CLS]에 해당하는 encoding vector를 output layer로 주어 Task를 수행한다.
 
-## bert vs gpt-1
+## GPT-1 vs BERT
 ---
-- training-data size
-    - GPT는 800M word, BERT는 2500M word를 사용해 학습
-- Batch size
-    - 일반적으로 큰 size의 batch 를 사용하면 최종 모델성능이 더 좋아지고 학습도 안정화가 된다. → Gradient descent를 수행할 때 더 많은 데이터를 고려해 업데이트하기 떄문
-    - BERT : 128000words
-    - GPT : 32000words
-- Task-specific fine-tuning
-    - GPT의 경우 5e-5라는 동일한 lr을 사용
-    - BERT는 Task별로 다른 lr을 사용
+GPT-1 vs BERT
+BERT 모델은 상대적으로 GPT-1에 비해 더 나은 성능을 보여주었다. 어떻게 보면 당연할 수도 있는게, GPT가 제시될 당시 GPT는 8억 개의 word로 학습되었고 BERT는 25억개의 word로 학습되었다.
+<br/>
+또한 batch size 역시 GPT가 32000 words, BERT가 128000 words로 BERT가 훨씬 컸다. (보통 큰 사이즈의 배치가 학습에 더 좋다)
+<br/>
+한편, GPT는 모든 fine-tuning task에서 똑같이 learning rate를 5e-5로 주었으나 BERT에서는 각 task에서 별도의 learning rate를 두고 fine-tuning 단을 학습시켰다.
 
 ## BERT : GLUE banchmark
 ![BERT3.PNG](BERT3.PNG)
@@ -109,12 +139,32 @@ BERT는 자연어 처리의 다양한 분야에서 높은 성능을 보임 ( 사
 
 # Machine Reading Comprehension (MRC)
 
-- Document를 해석하고 Question에 대답해주는 Task이다.
-- 이러한 Task를 위한 Dataset으로 SQuAD가 있다.
-- BERT를 사용해서...
+모든 downward task가 MRC 기반(독해 기반) 질의응답으로 이루어 질 수 있다는 내용의 논문이 발표됨
+<br/>
+예를 들어, 문서의 topic이 필요하다면 별도의 fine-tuning없이 'What is the topic?' 이라는 질문에 대한 응답으로 원하는 답을 얻을 수 있다. 이에 따르면 결국 별도의 fine-tuning 과정이 생략될 수도 있다. 
+
+
+# BERT: SQuAD 1.1/2.0
+---
+<br/>
+
+실제로 많은 질의응답 데이터 등을 이용해 BERT를 위에서 언급한 것처럼 질의응답 기반 모델로 발전시킬 수 있다. 이를 위해 SQuAD(Stanford Question Answering Dataset)라는 크라우드 소싱 기반 데이터가 활용될 수 있다. <br/>
+SQuAD 1.1 데이터 셋을 활용하여 학습되는 BERT에서는 먼저 질문을 던지면 그 질문에 대한 답이 주어진 문장 어딘가에 있다는 가정 하에, BERT 모델은 정답에 해당되는 단어 sequence의 첫번째 위치와 마지막 위치를 예측한다. 모든 단어를 self-attention에 통과시켜 나온 output vector를 최종적으로 linear layer에 통과시켜 scalar 값을 얻고, 이에 softmax를 적용하여 각 위치를 예측한다.<br/>
+여기서 추가적으로 필요하게 되는 parameter는 이 output vector를 통과시키는 첫번째 위치 예측을 위한 레이어의 가중치, 그리고 마지막 위치 예측을 위한 레이어의 가중치로 단 2개 layer의 parameter만 추가되면 우리는 이러한 질의응답 예측이 가능하다.<br/>
+SQuAD 2.2 데이터 셋을 활용하여 학습되는 BERT에서는 질문에 대한 답이 있는지 없는지부터 판단한다(binary classification). 만약 답이 있으면 아까 1.1에서와 같은 task를 또 수행하고, 답이 없으면 No answer에 해당하는 label을 출력한다. classification에는 앞에서 언급했던것처럼 CLS token을 이용한다. <br/>
+비슷한 유형으로, 예제 문장을 주고 이 다음에 올 문장을 4지선다로 고르는 문제가 주어져도, 예제 문장과 이 4개의 문장을 각각 concat하여 BERT를 통해 해결할 수 있다. <br/>
+concat한 벡터가 BERT를 통과하여 나온 encoding CLS token을 linear layer에 통과시켜 scalar 값을 얻는다. 이걸 각 문장에 대해 수행하면 총 4개의 scalar 값을 얻을 수 있는데, 이를 softmax에 통과시켜 훈련시킬 수 있으며 이 값을 통해 답을 예측할 수 있다.<br/>
+지금 소개한 pre-training model(GPT-1, BERT)들은 모델 사이즈를 늘리면 늘릴수록 무궁무진하게 계속 개선된다는 특징이 있다.BERT_ablation
+
+![bert_graph.PNG](bert_graph.PNG)
+
+물론 위 그래프처럼 후반부로 갈수록 상승폭이 줄어들긴 하지만, 리소스(GPU)만 많다면 모델의 성능을 무궁무진하게 개선할 수 있다는 점을 알 수 있다.
+<br/>
+특히 최근에는 GPT 모델이 GPT-3까지 발전하면서 위와 같은 특성을 유지하면서도 성능이 대폭 개선된 모델이 생겨나게 되었는데, 이로 인해 model size 만능론이 등장하면서 리소스가 부족한 많은 연구자들을 슬프게 만들기도 했다.
 
 ## GPT-2
 ---
+
 ![GPT-2.PNG](GPT-2.PNG)
 - Motivation
     - Multitask learning as Question Answering

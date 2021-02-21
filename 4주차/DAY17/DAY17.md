@@ -2,7 +2,7 @@
 # 수업복습
 
 
-## RNN(
+## RNN
 ---
 ![RNN1.PNG](RNN1.PNG)
 - rnn모델을 정의하는 파라미터 w는 모든 time-step에서 동일한 값을 공유한다는 것이 가장 중요한 특징
@@ -70,15 +70,22 @@ input sequence가 매우 길 경우 한번에 학습 하기에는 gpu가 버티�
 위의 예시에서는 3이 계속 곱해져 Gradient가 Exploding 될 수있다.
 
 ## LSTM(Long Short-Term Memory
+[참고블로그](https://www.notion.so/U-stage-2-16-NLP-e70414ffa48b42dca2ade44547886824)
+
 ---
+hidden state vector를 단기(short term) 기억과 장기(long term) 기억의 기억 소자로 나눠보자.
+
 - 기울기 소실을 해결
 
 
 ![LSTM.PNG](LSTM.PNG)
 ![LSTM2.PNG](LSTM2.PNG)
+![LSTM3.PNG](LSTM3.PNG)
+![LSTM4.PNG](LSTM4.PNG)
+![LSTM5.PNG](LSTM5.PNG)
 
 
-- Cell state Vctor, Hidden State Vector 두개의 Vector를 사용해 이전 정볼르 고려 한다.
+- Cell state Vctor, Hidden State Vector 두개의 Vector를 사용해 이전 정보를 고려 한다.
 - `Cell State` : 기억해야하는 모든 정보를 담고 있는 Vector
 - `Hidden State` : 현재 time step에 필요한 정보만 Cell State로 필터링한 Vector
 - `Forget gate` : 이전에서 넘어온 Cell State에 Hidden state와 input x에 Sigmoid를 취한 vector를 Element wise 곱셈을 하는것으로 특정 비율만큼만 고려하게 한다.(특정 비율을 잊게 한다)

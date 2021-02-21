@@ -2,7 +2,7 @@
 # 수업복습
 ---
 
-## optimization
+## 최적화(optimization) 기법
 ---
 
 ### Generalization
@@ -10,26 +10,31 @@
 일반적으로 학습을 시키게되면 train eroor가줄어듬  
 그러나 어느정도 시간이지나면 test error 는 오히려 올라간다.
 
+![Generalization.PNG](image/Generalization.PNG)
 > Generalization 이 좋다 -> 이 모델의 성능이 학습데이터와 비슷하게 나올것이다. 
 
 
 ### Underfitting vs. Overfitting
 ---
 ![오버피팅.PNG](image/오버피팅.PNG)
-
+-  `Underfitting`은 학습 데이터에 대한 학습이 덜 된 상태
+- `Ovefitting`은 너무 학습 데이터에만 fit되는 학습이 이루어진 사애
+- `Balanced Model`은 둘 사이의 적정선을 유지하는 모델
 ### Cross-validation
 ---
 일반적으로 Corss-validation통해 최적의 하이퍼 파라미터를 찾고,  
 마지막에는 train 데이터셋 모두를 사용해서 학습시킴(많은 데이터를 학습시키면 좋으니까)  
 <br/>
 
-> 학습 데이터를 K개로 나누어서 성능 검증
+`학습 데이터를 K개로 나누어서 성능 검증`
   
 ![Cross-validation.PNG](image/Cross-validation.PNG)
 
 
 ### Bias and Variance
 ---
+- bias, 편향이 높으면 예측값 자체가 정답과 멀리 떨어져 있음을 의미
+- Variance, 분산이 낮다는 것은 출력이 일관적이라는 것을 뜻함.
 > Bias가 커지면 Variance가 작아지고, Variance가 커지면 Bias가 작아짐
 적절한 지점을 찾는게 목표.
 
@@ -37,21 +42,29 @@
 
 ### Bootstrapping
 ---
-학습데이터가 고정되어있을때 그 안에서 서브샘플링을 통해 학습데이터를 여러개를 만들어 여러 모델을 만들어 무언가를 하겠다
+학습데이터가 고정되어있을때 그 안에서 서브샘플링을 통해 학습데이터를 여러개를 만들어 여러 모델을 만듦
 
-### Bagging vs. Boosting
+이 여러개의 모델을 어떻게 활용하느냐에 따라 Bagging과 Boosting으로 갈리게 된다.
+
+![배깅_부스팅.PNG](image/배깅_부스팅.PNG)
+
+#### Bagging vs. Boosting
 ---
+
+
+
 - Bagging (Booststrapping aggregating)
     - 여러개의 모델을 bootstrapping으로 학습시킴
     - 일반적으로 10만개의 데이터를 한모델로 학습시키는 것보다 2만개씩 5개의 모델로 학습시켜 그 결과값을 평균내는것이 더 좋음.
 - Boosting
     - 학습 데이터가 10만개가 있으면 8만개의 데이터는 잘 예측하고 2만개의 데이터를 잘예측못한다 -> 다음 모델은 2만개의 데이터에 집중 -> ...-> 이렇게 모델을 만들어서 모델을 합침.
     
-![배깅_부스팅.PNG](image/배깅_부스팅.PNG)
 
-### Gradient Descent Methods
+
+### 경사 하강법 (Gradient Descent Methods)
 ---
 - Stochastic gradient descent
+    - 배치 사이즈가 1
     - 10만개의 데이터가 있으면 한번에 한개를 구해서 업데이트하고..반복..
 
 - Mini-batch gradient descent
@@ -66,7 +79,9 @@
 Batch-size를 크게하면 sharp minimizer에 도달하고
 Batch-size를 작게하면  flat minimizer에 도달한다는 것을 발견.
 <br/>
+
 ![batch_size.PNG](image/batch_size.PNG)
+
 <br/>
 우리가 찾고싶은건 tresting funcion에서 Minimum 인데, 
 flat Minimun은 train fuction에서 조금멀어져도 test fuction 에서도 적당히 멀어진다.  
