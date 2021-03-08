@@ -134,3 +134,7 @@ pseudo labeling은 실제 Kaggle에서도 많이 활용하는 기법인데 unlab
 다만, 이전 distilation과 다른 점은 여기서는 studnet model의 size가 점점 커진다는 것이다. 여기서는 경량화가 목적이 아니기 때문에 이는 정확도를 높이기 위한 하나의 수단으로 이해될 수 있다.
 ![CV](CV12.PNG)
 최종적으로 이 과정을 위 그림과 같이 요약할 수 있다.
+
+## 실습 VGG-NET 구현
+---
+https://colab.research.google.com/drive/1d7VH5xnuengtOprm6544l0t-1PVOEOXf?usp=sharing
