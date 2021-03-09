@@ -299,7 +299,34 @@ U-Net은 FCN과 어느정도 유사한 형태이지만 보다 진보된 구조�
 
 
 ---
+DeepLab 또한 semantic segmentation task에서 한 획을 그었던 모델로, 2015년 v1 부터 2018년 v3+ 까지 발표되었다.
+<br/> 
+
+주요 특징으로는 **CRFs(Conditional Random Fields)라는 후처리와 Dilated Convolution(Atrous Convolution)라는 convolution operation을 활용한다는 점 등이 있다.
+
+먼저 CRFs(Conditional Random Fields)부터 살펴 보자.
 
 
+![deeplab](https://olenmg.github.io/img/posts/32-12.png)
 
+여기서 쓰인 CRFs는 정확히는 fully-connected CRF이다.
 
+간단하게 요약하면 fully-connected CRF는 후처리 작업인데 이를 적용할 시 앞선 convolution(Dilated CNN)연산의 결과로 나온 feature map에서 boundary를 위 그림과 같이 더 확실하게 그어줄 수 있게 된다. 근데 이것도 DeeppLab v2까지만 활용했고 v3부터는 활용하지 않고도 정확한 boundart를 잡아내었다.
+
+다음으로 Dilated Convolution(Atrous Convolution)은 아래 그림 우측과 같이 convolution할 때 **dilation facor**만큼 픽셀 사이 공간을 넣어준 채로 연산을 수행한다.(여기서 stride = 2)
+![deeplab](https://olenmg.github.io/img/posts/32-13.png)
+이렇게 하면 좌측과 같은 standard conv 연산보다 더 넓은 영역을 고려할 수 있게 된다.(= 더 넓은 receptive filed)그런데 parameter 수는 늘어나지 않으므로 같은 parmeter만으로도 **receptive field를 exponential하게 확 증가시키는 효과**를 얻을 수 있게 된다.
+<br/>
+
+DeepLab v3+ 부터는 들어오는 입력 이미지의 해상도가 너무 커서 computational cost를 줄이기 위해 **depthwise separable conv와 atrous conv를 결합한 atrous separable conv**를 사용하게 된다.
+
+depthwise separable conv는 아래와 같이 conv연산이 채널별 conv와 채널 전체 단위 conv로 나뉘게 된다.
+![deeplab](https://olenmg.github.io/img/posts/32-14.png)
+
+이렇게 하면 $D_K$와 $D_F$ 가 각각 kernel.feature map size이고 M, N이 각각 입력, 출력 채널 수 일때 parameter수가 기존 $D^2_KMND^2_F$에서 $D^2_KMD^2_F + MND^2_F$로 감소하게 된다. 참고로 이는 MobileNet 논문에서 이전에 제시된 기법인데, 이를 그대로 활용하였다.
+![deeplab](https://olenmg.github.io/img/posts/32-15.png)
+
+그 외 DeeppLab v3+에서는 아래와 같은 특징을 가진다.
+- U-Net의 Encoder-Decoder 구조를 활용(Encoder(backbone)에 Xception 기반 모델 사용, Decoder에 U-Net 기반 모델 사용)
+- 맨 가운데 부분처럼 **Atrous Spatial Pyramid Pooling(ASPP)기법 (multi-scale context에서 conv하여 concatenation 하는 기법) 활용
+- CRFs 구조 없이 거의 완전한 boundary 탐색 (boundary는 v2 까지만 활용)

@@ -135,6 +135,3 @@ pseudo labeling은 실제 Kaggle에서도 많이 활용하는 기법인데 unlab
 ![CV](CV12.PNG)
 최종적으로 이 과정을 위 그림과 같이 요약할 수 있다.
 
-## 실습 VGG-NET 구현
----
-https://colab.research.google.com/drive/1d7VH5xnuengtOprm6544l0t-1PVOEOXf?usp=sharing
