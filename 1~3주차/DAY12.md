@@ -207,7 +207,7 @@ weight 몇개를 0으로 잡는거
 - 지금까지 배운 다층신겨망(MLP)은 각 뉴런들이 선형모델과 활성함수로 모두 연결된(fully connected) 구조 였다.
 <br/>  
 
-![Convolution.PNG](image/Convolution.PNG)
+![Convolution.PNG](image/Convolution1.PNG)
 
 <br/>  
 
