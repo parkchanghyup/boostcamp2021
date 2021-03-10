@@ -208,7 +208,7 @@ weight 몇개를 0으로 잡는거
 <br/>  
 
 ![Convolution.PNG](image/Convolution.PNG)
-![Convolution2.PNG](image/Convolution2.PNG)
+
 <br/>  
 
 - Convolution 연산의 수학적인 의미는 신호(signal)를 **커널을 이용해 국소적으로 증폭 또는 감소**시켜서 정보를 추출 또는 필터링하는 것이다.
