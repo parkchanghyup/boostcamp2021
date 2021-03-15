@@ -73,7 +73,7 @@ R-CNN 모델에서는 먼저 regional proposal을 뽑아낸다. 박스 후보군
 Fast R-CNN은 Rol pooling 기법을 활용하여 이 두문제를 해결하였다.  
 
 ![](https://olenmg.github.io/img/posts/33-5.png)  
-여기서도 먼저 SS를 통해 Rol을 찾는다. 그 **다음 전체 이미지를 먼저 CNN에 통과**시켜 전처에 대한 feature map를 얻는다. 그리고 이전에 찾았던 Rol을 feature map 크기에 맞춰 projection 시킨 후 여기에 Rol Pooling을 적용하여 각 Rol에 대한 고정된 크기의 feature vector를 얻는다.
+여기서도 먼저 SS를 통해 Rol을 찾는다. 그 **다음 전체 이미지를 먼저 CNN에 통과**시켜 전체에 대한 feature map를 얻는다. 그리고 이전에 찾았던 Rol을 feature map 크기에 맞춰 projection 시킨 후 여기에 Rol Pooling을 적용하여 각 Rol에 대한 고정된 크기의 feature vector를 얻는다.
 
 <br/>
 
@@ -85,7 +85,7 @@ Fast R-CNN은 Rol pooling 기법을 활용하여 이 두문제를 해결하였�
 
 <br/>
 
-좀 더 자세히 보면, 이 부분에서는 amx pooling이 되는데 정확히는 **고정된 크기의 출력이 나오게끔 amx pooling이 된다.** 이 부분은 우리가 원래 알던 CNN의 max pooling과 조금 다르다.
+좀 더 자세히 보면, 이 부분에서는 max pooling이 되는데 정확히는 **고정된 크기의 출력이 나오게끔 max pooling이 된다.** 이 부분은 우리가 원래 알던 CNN의 max pooling과 조금 다르다.
 
 ![](https://olenmg.github.io/img/posts/33-6.png)
 
@@ -98,7 +98,7 @@ Fast R-CNN은 Rol pooling 기법을 활용하여 이 두문제를 해결하였�
 
 <br/>
 
-요약하면 CNN 연산이 1번밖에 사용되지 않아 연산량 측면에서 이점을 확실히 가져갔으며 **CNN을 먼저 적용하고 warp 없이 Rol를 projection시키고 연산한 것이라서 calssification 단계에서 end-to-end 학습이 가능하다.
+요약하면 CNN 연산이 1번밖에 사용되지 않아 연산량 측면에서 이점을 확실히 가져갔으며 **CNN을 먼저 적용하고 warp 없이 Rol를 projection시키고 연산한 것이라서 calssification 단계에서 end-to-end 학습이 가능**하다.
 
 <br/>
 
@@ -108,17 +108,18 @@ Fast R-CNN은 Rol pooling 기법을 활용하여 이 두문제를 해결하였�
 
 Faster R-CNN은 ROl 추출을 위해 RPN(Region Proposal Network)단을 도입한다. 참고로, 그 뒷단은 Fast R-CNN과 완전히 동일하다. 물론 학습이 end-to-end로 이루어지기 때문에 region proposal을 찾는 단과 calssfication을 수행하는 단이 동시에 학습된다는 차이점도 있다.  
 
-아무튼 그래서 RPN에 대해 알아보자
+아무튼 그래서 RPN에 대해 알아보자  
+
 ![](https://olenmg.github.io/img/posts/33-8.png)  
 여기서는 **anchor box**라는 개념이 잇는데 그냥 미리 rough하게 정해놓은 후보군의 크기 정도로 이해하면 된다. hyperparameter이며, 원 논문에서는 박스의 scale과 비율을 각각 3종류씩 주어 총 9개의 ancohr box를 활용하였다.  
 
 <br>
 
-Faster R-CNN에서는 미리 학습 데이터를 정하게 되는데, 모든 픽셀에 대하여 anchor box를 다 구해놓고 **ground truth와의 IoU score를 계산하여 0.7보다 크면 positive sample, 0.3보다 작으면 engative sample로 활용하게 된다.  
+Faster R-CNN에서는 미리 학습 데이터를 정하게 되는데, 모든 픽셀에 대하여 anchor box를 다 구해놓고 **ground truth와의 IoU score를 계산하여 0.7보다 크면 positive sample, 0.3보다 작으면 negative sample로 활용하게 된다.  
 
 <br/>
 
-IoU(Intersection over Union) score는 주어진 두 영역의 `교집합 영역 / 합집합 영역` 이다. 즉 영역의 overlap이 많으면 이 score가 높게 나오게 된다. 참고로 IoU score가 0.3에서 0.7사이인 샘플은 학습에 도움이 되지 않는다고 판단하여 워 논문에서는 이를 학습에 활용하지 않는다.  
+IoU(Intersection over Union) score는 주어진 두 영역의 `교집합 영역 / 합집합 영역` 이다. 즉 영역의 overlap이 많으면 이 score가 높게 나오게 된다. 참고로 IoU score가 0.3에서 0.7사이인 샘플은 학습에 도움이 되지 않는다고 판단하여 위 논문에서는 이를 학습에 활용하지 않는다.  
 ![](https://olenmg.github.io/img/posts/33-7.png)
 
 RPN의 input은 CNN을 먼저 통과한 feature map이다. input에 3 x 3 conv를 하여 256d로 channel을 늘린 후 cls layer와 reg layer에서는 각각 1 x 1 conv를 통해 2k, 4k channel을 가지는 feature를 얻게 된다.(k는 anchor box의 수이다) cls layer의 output 2k개에서는 해당 위치의 k개의 anchor가 각각 개체가 맞는지 아닌지에 대한 예측값을 담고, reg layer의 output 4k개에서는 box regression 예측 좌표 값을 담는다.
@@ -139,6 +140,7 @@ NMS는 후보군 anchor box에서 허수/중복 데이터를 필터링하는 역
 이렇게까지 하면 최종적인 anchor 후보군을 선정할 수 있게 된다. 남은 것은 앞서 본 Fast R-CNN을 위에서 만들어낸 proposal에 적용하는 것 뿐이다.
 
 <br/>
+
 R-CNN family의 구조를 전체적으로 요약하면 아래와 같다.
 ![](https://olenmg.github.io/img/posts/33-10.png)
 
@@ -276,11 +278,12 @@ visualization 방법으로 널리 통용되는 CAM(Class activation mapping) 방
 이 방법을 쓰려면 반드시 **모델의 마지막 decision part에서 GAP(global average pooling)과 FC layer가 순차적으로 활용되어야 한다.** heatmap을 찍기 위해 이 GAP의 결과 $F_k$와 FC layer의 weight가 $w_k$가 활용되기 때문이다.  
 
 일단 위 조건을 만족하는 모델의 pre-training이 완료되었으면, 이제 target image를 모델에 넣고 *(1) GAP의 결과인 $F_k$들과 (2) 그 값들이 원하는 클래스의 값으로 연결되는 FC layer의 weight 값 $w_k^c$들을 가져와서 클래스 c에 대한 score 값 $S_c$를 구한다. score 값을 구하는 구체적인 식은 아래와 같다.  
-$\begin{align}
-S_c &= \sum_{k} \mathrm{w}_{k}^{c}F_k  \\
-&= \sum_{k} \mathrm{w}_{k}^c \sum_{(x,y)}f_k(x,y) \\
-&= \sum_{(x,y)} \sum_{k} \mathrm{w}_{k}^{c}f_k(x,y)
-\end{align}$
+
+$S_c$   
+$= \sum_{k} \mathrm{w}_{k}^{c}F_k$  
+    $= \sum_{k} \mathrm{w}_{k}^c \sum_{(x,y)}f_k(x,y)$  
+        $= \sum_{(x,y)} \sum_{k} \mathrm{w}_{k}^{c}f_k(x,y)$
+
 
 (6)은 scoring 식을 나타낸 것이고, (7)은 GAP 연산을 풀어서 쓴 것이다. (8)은 식의 순서를 변경한 것이다. 우리가 필요한 것은 **GAP 연산을 하기 전, 공간 정보까지 남아있는 class activation이다**. 따라서 최종적으로 우리가 활용할 부분은 공간정보를 합치기 이전 $\sum\limits_{k} \mathrm{w} _{k}^{c}f_k(x,y)$ 항이다. 이 부분을 `CAM`이라 부르며, 우리가 원하던 값이다.
 
@@ -315,7 +318,8 @@ Gard-CAM은 모델의 구조 변경이나 이에 따른 재학습 과정이 필�
 <br/>
 
 결론적으로 이를 식으로 나타내면 아래와 같다. $\alpha ^c _k$가 standard CAM에서의 $w_k^c$와 같은 역할(가중치)를 하고 $A^k$가 앞에서의 $f^k$와 같은 역할(feature)를 한다.  
-$\alpha_{k}^{c} = \frac{1}{Z}\sum_i \sum_j\, \frac{\partial y^c}{\partial A_{ij}^k}  $
+
+$\alpha_{k}^{c} = \frac{1}{Z}\sum_i \sum_j\, \frac{\partial y^c}{\partial A_{ij}^k}$  
 $L_{\text{Grad-CAM}}^{c} = \mathrm{ReLU}(\sum_{k} \alpha_{k}^{c}A^{k})$
 
 결국 이전과 다른 점은 gradient를 활용했다는 점, 그리고 앞서 본 gradient에 ReLU를 적용했을 때의 장점을 취한다는 점 뿐이다.  
@@ -326,3 +330,6 @@ Grad-CAM에서는 위와 같이 Guided Backpropagation 방법도 함께 활용�
 <br/>
 
 위에서 오른쪽 그림은 다양한 task에 대해 이를 적용할 수 있다는 것을 나타낸 그림이다. 
+
+
+

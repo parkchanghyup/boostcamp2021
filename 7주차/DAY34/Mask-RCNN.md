@@ -2,7 +2,7 @@
 
 R-CNN은 CNN에 Region Proposal 을 추가하여 물체가 있을법한 곳을 제안하고, 그 구역에서 object detection을 하는 것이다. R-CNN 계열 모델은 R-CNN, Fast R-CNN, Faster R-CNN, Mask R-CNN 까지 총 4가지 종류가 있다.
 
-출처: https://mylifemystudy.tistory.com/82 [ENCAPSULATION]
+
 ![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F1wDMd%2FbtqxpACZC67%2FFMztXdpZW0XsX3GRLHo4gk%2Fimg.png)  
 
 R-CNN은 분류 후 회귀, Fast R-CNN, Faster R-CNN은 분류와 회귀를 병렬로, Mask R-CNN은 여기에 Masking 까지 병렬로 수행  
