@@ -22,3 +22,98 @@
 
 # CustomDataset 코드 
 ---
+
+```python
+# Image 불러오는거
+import torch
+from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
+
+import os
+import cv2
+import numpy as np
+from glob import glob
+
+class MaskDataset(Dataset):
+  def __init__(self, data_root, is_Train=True, input_size=255, transform=None):
+    super(MaskDataset, self).__init__()
+
+    self.img_list = self._load_img_list(data_root, is_Train)
+    self.len = len(self.img_list)
+    self.input_size = input_size
+    self.transform = transform
+
+  def __getitem__(self, index):
+    # 이미지로드
+    img =Image.open(self.img_list[index])
+
+
+    if self.transform:
+      img = self.transform(img)
+
+    # Ground Truth
+    label = self._get_class_idx_from_img_name(self.img_list[index])
+
+    return img, label
+
+  def __len__(self):
+    return self.len
+
+  def _load_img_list(self, data_root, is_Train):
+    
+    # 폴더이름 1234-1 -> 12341 로수정
+    full_img_list = glob(data_root + '/*')
+    for dir in full_img_list:
+      dirname = os.path.basename(dir)
+      if '-1' in dirname:
+        os.rename(dir, dir.replace(dirname, dirname.replace('-1', '1')))
+      elif '-2' in dirname:
+        os.rename(dir, dir.replace(dirname, dirname.replace('-2','2')))
+    
+    # ID < 6000 -> train
+    # 6200 < ID -> test
+    img_list = []
+    for dir in glob(data_root + '/*'):
+      if is_Train and (self._load_img_ID(dir) < 6200):
+        img_list.extend(glob(dir+'/*'))
+      elif not is_Train and (6199 < self._load_img_ID(dir)):
+        img_list.extend(glob(dir+'/*'))
+
+    return img_list
+
+  def _load_img_ID(self, img_path):
+    return int(os.path.basename(img_path).split('_')[0])
+
+  def _get_class_idx_from_img_name(self, img_path):
+    img_name = os.path.basename(img_path)
+    img_age = img_path.split('/')[-2].split('_')[-1]
+    img_gender = img_path.split('/')[-2].split('_')[1]
+    cnt = 0
+    
+    if 'incorrect' in img_name: 
+        cnt+= 12
+        
+    elif 'normal' in img_name: 
+        
+        cnt += 6
+    elif 'mask' in img_name: 
+        cnt+=cnt
+        
+        
+    
+    if int(img_age) < 30 :
+        cnt = cnt
+    elif int(img_age) < 60 :
+        cnt +=1
+    else :
+        cnt +=2
+        
+    
+    if 'female' in img_gender:
+        cnt+=3
+        
+    
+        
+    return cnt
+    
+```
